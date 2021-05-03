@@ -1,0 +1,36 @@
+---
+title: "Barshis_annot"
+author: "Melissa Naugle"
+date: "4/30/2021"
+output: html_document
+---
+
+```{r readdata}
+setwd(dir = "/Users/Melissa/Desktop/GitHub/MSCI430_corals_Sp21/Scripts_to_make_figures/")
+annot <- read.csv("../data/33496_MasterCombinedAnnotationTable.csv")
+head(annot)
+annot$ContigID <- annot$Ourcontigname
+
+dges_0.001 <- read.table("../data/EdgeR_P0.001/diffExpr.P0.001_C2.matrix", sep = "\t")
+dges_0.001 <- cbind(ContigID = rownames(dges_0.001), dges_0.001)
+dges_0.05 <- read.table("../data/EdgeR_P0.05/diffExpr.P0.05_C2.matrix", sep = "\t")
+dges_0.05 <- cbind(ContigID = rownames(dges_0.05), dges_0.05)
+
+```
+
+
+```{r selectgenes}
+dges_0.05_annot <- subset(annot, ContigID %in% dges_0.05$ContigID)
+dges_0.001_annot <- subset(annot, ContigID %in% dges_0.001$ContigID)
+
+#to look for specific types of genes, can replace the text below 
+dges_0.001_annot$topnrMatch[grep("heat", dges_0.001_annot$topnrMatch)]
+dges_0.001_annot$topnrMatch[grep("chaperone", dges_0.001_annot$topnrMatch)]
+dges_0.001_annot$topnrMatch[grep("binding", dges_0.001_annot$topnrMatch)]
+dges_0.001_annot$topnrMatch[grep("transcription", dges_0.001_annot$topnrMatch)]
+
+write.csv(dges_0.001_annot, "../data/EdgeR_P0.001/annotations_diffExpr.P0.001_C2.matrix.csv")
+
+```
+
+

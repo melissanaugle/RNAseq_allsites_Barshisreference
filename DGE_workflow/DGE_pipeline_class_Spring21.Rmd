@@ -1,0 +1,99 @@
+---
+title: "DGE_pipeline_class_Spring21"
+author: "Melissa Naugle"
+date: "4/19/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+# Check basenames before trimming data
+
+```{bash check_basenames}
+for infile in *_1.fq.gz
+do
+    base=$(basename ${infile} _1.fq.gz)
+    echo ${base}
+done >> /data/corals/QC_cannery_vatia/output.txt 2>&1
+```
+
+# Trim data 
+Using file: adapters_polyt.fasta 
+Contains Illumina adapter seqs and polyT seq 
+
+Should do this with screen  
+
+```{bash trim}
+for infile in *_1.fq.gz
+do
+   base=$(basename ${infile} _1.fq.gz)
+   java -jar /opt/Trimmomatic-0.36/trimmomatic-0.36.jar PE -phred33 -threads 4 ${infile} ${base}_2.fq.gz /data/corals/QC_cannery_vatia/${base}_1.trimmed.fq.gz /data/corals/QC_cannery_vatia/${base}_1un.trimmed.fq.gz /data/corals/QC_cannery_vatia/${base}_2.trimmed.fq.gz /data/corals/QC_cannery_vatia/${base}_2un.trimmed.fq.gz ILLUMINACLIP:/data/corals/QC_cannery_vatia/adapters_polyt.fasta:2:30:10 SLIDINGWINDOW:4:5 LEADING:5 TRAILING:5 MINLEN:25 >> output.txt
+done >> /data/corals/QC_cannery_vatia/trimoutput.txt 2>&1
+
+```
+
+# Run FastQC
+
+```{bash fastqc}
+fastqc *.fq.gz
+```
+
+# Mapping 
+To Barshis 2013 ref transcriptome: 33496_Ahyacinthus_CoralContigs.fasta
+
+copied everything to alldata_class
+can delete after mapping
+
+```{bash mapping}
+nohup perl /opt/trinityrnaseq/util/align_and_estimate_abundance.pl --transcripts 33496_Ahyacinthus_CoralContigs.fasta --seqType fq --samples_file coral_samples_can_vat_all.txt --est_method RSEM --aln_method bowtie2 --prep_reference --output_dir RSEM_mapping > RSEM_out 2>&1 &
+```
+
+
+# Counts Matrix
+```{bash counts}
+nohup perl /opt/trinityrnaseq/util/abundance_estimates_to_matrix.pl --est_method RSEM --gene_trans_map none --name_sample_by_basedir CoPt_E_rep1/RSEM.genes.results CoPt_E_rep2/RSEM.genes.results CoPt_E_rep3/RSEM.genes.results CoPt_E_rep4/RSEM.genes.results CoPt_H_rep1/RSEM.genes.results CoPt_H_rep2/RSEM.genes.results  CoPt_H_rep3/RSEM.genes.results  CoPt_H_rep4/RSEM.genes.results Falu_E_rep1/RSEM.genes.results Falu_E_rep3/RSEM.genes.results Falu_E_rep4/RSEM.genes.results Falu_E_rep6/RSEM.genes.results Falu_H_rep1/RSEM.genes.results  Falu_H_rep4/RSEM.genes.results  Falu_H_rep6/RSEM.genes.results Ftele_E_rep3/RSEM.genes.results Ftele_E_rep5/RSEM.genes.results Ftele_E_rep6/RSEM.genes.results Ftele_H_rep1/RSEM.genes.results Ftele_H_rep3/RSEM.genes.results  Ftele_H_rep5/RSEM.genes.results  Ftele_H_rep6/RSEM.genes.results Can_E_rep2/RSEM.genes.results Can_E_rep3/RSEM.genes.results Can_E_rep4/RSEM.genes.results Can_E_rep6/RSEM.genes.results Can_H_rep2/RSEM.genes.results Can_H_rep3/RSEM.genes.results Can_H_rep5/RSEM.genes.results Can_H_rep6/RSEM.genes.results Vat_E_rep1/RSEM.genes.results Vat_E_rep3/RSEM.genes.results Vat_E_rep4/RSEM.genes.results Vat_E_rep6/RSEM.genes.results Vat_H_rep1/RSEM.genes.results Vat_H_rep3/RSEM.genes.results Vat_H_rep4/RSEM.genes.results Vat_H_rep6/RSEM.genes.results > RSEMae_out 2>&1 &
+```
+
+
+# Compare reps
+
+```{bash comparereps}
+#cor matrix (works on khaleesi now!)
+perl /opt/trinityrnaseq/Analysis/DifferentialExpression/PtR --matrix RSEM.isoform.counts.matrix --min_rowSums 10 -s coral_samples_can_vat_all.txt --log2 --CPM --sample_cor_matrix
+```
+
+
+#PCA
+```{bash pca}
+#pca
+perl /opt/trinityrnaseq/Analysis/DifferentialExpression/PtR --matrix RSEM.isoform.counts.matrix -s coral_samples_can_vat_all.txt --min_rowSums 10 --log2 --CPM --center_rows --prin_comp 3 
+```
+
+```{bash dge}
+#make replicates file 
+#basically just first 2 columns of samples file
+#txt file
+
+# Run DGE
+nohup perl /opt/trinityrnaseq/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix RSEM.isoform.counts.matrix --method edgeR --samples_file coral_samples_can_vat_all_replicates.txt
+
+#cd into edgeR folder, then run this 
+#can run with diff p values and diff fold changes (-c 2 is 4 fold change, -c 1 is 2 fold change) 
+#first p = 0.001
+perl /opt/trinityrnaseq/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix /data/corals/alldata_class/RSEM.isoform.TMM.EXPR.matrix -P 0.001 -C 2 --samples /data/corals/alldata_class/coral_samples_can_vat_all_replicates.txt
+
+#p = 0.05
+perl /opt/trinityrnaseq/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix /data/corals/alldata_class/RSEM.isoform.TMM.EXPR.matrix -P 0.05 -C 2 --samples /data/corals/alldata_class/coral_samples_can_vat_all_replicates.txt
+
+```
+
+
+
+
+
+
+
+
+
+

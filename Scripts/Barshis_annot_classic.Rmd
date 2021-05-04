@@ -1,0 +1,30 @@
+---
+title: "Barshis_annot"
+author: "Melissa Naugle"
+date: "4/30/2021"
+output: html_document
+---
+
+```{r readdata}
+setwd(dir = "/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/Scripts/")
+annot <- read.csv("../data/33496_MasterCombinedAnnotationTable.csv")
+head(annot)
+annot$ContigID <- annot$Ourcontigname
+
+dges_0.05 <- read.table("../data/EdgeR_P0.05/diffExpr.P0.05_C2.matrix", sep = "\t")
+dges_0.05 <- cbind(ContigID = rownames(dges_0.05), dges_0.05)
+
+```
+
+
+```{r selectgenes}
+dges_0.05_annot <- subset(annot, ContigID %in% dges_0.05$ContigID)
+
+#to look for specific types of genes, can replace the text below 
+dges_0.05_annot$topnrMatch[grep("heat", dges_0.05_annot$topnrMatch)]
+
+write.csv(dges_0.05_annot, "../data/EdgeR_P0.05/annotations_diffExpr.P0.05_C2.matrix.csv")
+
+```
+
+

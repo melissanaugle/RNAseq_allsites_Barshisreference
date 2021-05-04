@@ -171,11 +171,11 @@ dev.off()
 Must run this right after previous chunk to get correct n groups
 
 ```{r venn_barshis_genes}
-barshisgenes <- read.csv("../barshis2012_DElist.csv", skip = 4)
+barshisgenes_full <- read.csv("../barshis2012_DElist.csv", skip = 4)
 head(barshisgenes)
-barshisgenes$ContigID <- barshisgenes$Ourcontigname
-nrow(barshisgenes)
-barshisgenes <- select(barshisgenes, "ContigID")
+barshisgenes_full$ContigID <- barshisgenes_full$Ourcontigname
+nrow(barshisgenes_full)
+barshisgenes <- select(barshisgenes_full, "ContigID")
 
 shared1 <- subset(barshisgenes, ContigID %in% n12$ContigID)
 shared2 <- subset(barshisgenes, ContigID %in% n13$ContigID)
@@ -210,6 +210,14 @@ grid.newpage()
 png("../Figures/Classic_EdgeR/venn_controlvheat_5sites_P0.05_barshisshared_allheatvcontrol_atleast2sites.png")
 grid.draw(venn.plot)
 dev.off()
+
+#look at these genes
+
+DE_heatvcontrol_atleast2sites <- subset(barshisgenes_full, ContigID %in% shared_cross$ContigID)
+DE_heatvcontrol_atleast2sites <- select(DE_heatvcontrol_atleast2sites, 'ContigID', "topnrMatch", 'Uniprot.Description')
+
+write_csv(DE_heatvcontrol_atleast2sites, "../data/DE_comparison_lists/Genes_Barshis2013_MVHV_DE_heatcontrol_atleast2sites_heatcontrol.csv")
+
 ```
 
 

@@ -85,5 +85,5 @@ g <- ggplot(df_molten_dat, aes(x=treatment,y=Trinity_ID)) +
 
 g
 
-ggsave("../Figures/heatmap_p0.001_allheatvcontrol_04_26_21_smallerlimits.png",plot=g)
+ggsave("../Figures/Classic_EdgeR/heatmap_p0.001_allheatvcontrol_04_26_21_smallerlimits.png",plot=g)
 ```

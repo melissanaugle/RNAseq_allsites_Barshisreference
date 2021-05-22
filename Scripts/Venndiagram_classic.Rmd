@@ -18,6 +18,7 @@ library(reshape2)
 library(ggthemes) 
 library(VennDiagram)
 library(dplyr)
+
 ```
 
 #2. Read in data files
@@ -95,7 +96,6 @@ n1345 <- intersect(n134,area5, by="ContigID")
 n2345 <- intersect(n234,area5, by="ContigID")
 n12345 <- intersect(n1234,area5, by-"ContigID")
 
-write.csv(n12345, "../data/DE_middle_of_venn_classic_FDR0.05.csv", row.names = F)
 
 ```
 
@@ -167,7 +167,7 @@ dev.off()
 
 
 #Venn to compare to Barshis
-
+#now that I'm looking again- idk if this is right 5/14/21
 Must run this right after previous chunk to get correct n groups
 
 ```{r venn_barshis_genes}
@@ -382,8 +382,40 @@ dev.off()
 
 
 ```
-#Compare Barshis Frontload
 
+#Just heat stress
+
+```{r venn_heat}
+CoPtH_CanH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_H_vs_CoPt_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CoPtH_CanH <- setNames(cbind(rownames(CoPtH_CanH), CoPtH_CanH, row.names = NULL), c("ContigID", colnames(CoPtH_CanH)))
+head(CoPtH_CanH)
+CoPtH_CanH <- select(CoPtH_CanH, "ContigID")
+
+TeleH_VatH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Ftele_H_vs_Vat_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+TeleH_VatH <- setNames(cbind(rownames(TeleH_VatH), TeleH_VatH, row.names = NULL), c("ContigID", colnames(TeleH_VatH)))
+head(TeleH_VatH)
+TeleH_VatH <- select(TeleH_VatH, "ContigID")
+
+
+#coco v can / tele v vat
+
+shared <- intersect(CoPtH_CanH,TeleH_VatH, by="ContigID")
+
+venn.plot <- draw.pairwise.venn(area1 = nrow(CoPtH_CanH), area2 = nrow(TeleH_VatH), cross.area = nrow(shared), category = c("Coconut Point Heat Stress v \n Cannery Heat Stress", "Faga'tele Heat Stress v \n Vatia Heat Stress"), fill = c("salmon", "skyblue"), lty = 1, cat.cex = 1.2, cat.pos = 1, cex = 2)
+
+#Save the  Venn diagram
+grid.newpage()
+png("../Figures/Classic_EdgeR/venn_heats_only_P0.05_cancoco_televat.png")
+grid.draw(venn.plot)
+dev.off()
+
+```
+
+
+
+
+#Compare Barshis Frontload
+#not the correct comparison - must fix this 
 
 ```{r venn_televatVbarshisfrontload}
 
@@ -408,6 +440,8 @@ grid.newpage()
 png("../Figures/Classic_EdgeR/venn_controlvheat_5sites_P0.05_barshisshared_control_tele_vat.png")
 grid.draw(venn.plot)
 dev.off()
+
+
 
 
 ```

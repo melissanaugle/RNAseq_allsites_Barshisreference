@@ -1,0 +1,20 @@
+CoPt_E    CoPt_E_rep1    
+CoPt_E    CoPt_E_rep2    
+CoPt_E    CoPt_E_rep3    
+CoPt_E    CoPt_E_rep4    
+Falu_E    Falu_E_rep1    
+Falu_E    Falu_E_rep3    
+Falu_E    Falu_E_rep4    
+Falu_E    Falu_E_rep6    
+Ftele_E   Ftele_E_rep3   
+Ftele_E   Ftele_E_rep5   
+Ftele_E   Ftele_E_rep6      
+Can_E    Can_E_rep2    
+Can_E    Can_E_rep3    
+Can_E    Can_E_rep4    
+Can_E    Can_E_rep6     
+Vat_E    Vat_E_rep1    
+Vat_E    Vat_E_rep3    
+Vat_E    Vat_E_rep4    
+Vat_E    Vat_E_rep6    
+    

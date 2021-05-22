@@ -7,6 +7,7 @@ output:
   html_document: default
 ---
 
+Everything is in alldata_class
 
 # Check basenames before trimming data
 
@@ -89,9 +90,36 @@ perl /opt/trinityrnaseq/Analysis/DifferentialExpression/analyze_diff_expr.pl --m
 ```
 
 
+Run DGE just controls
+
+```{bash}
+nohup perl /opt/trinityrnaseq/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix RSEM.isoform.counts.matrix --method edgeR --samples_file coral_samples_allsites_controls.txt
+
+#cd into edgeR folder, then run this 
+#can run with diff p values and diff fold changes (-c 2 is 4 fold change, -c 1 is 2 fold change) 
+#first p = 0.001
+perl /opt/trinityrnaseq/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix /data/corals/alldata_class/RSEM.isoform.TMM.EXPR.matrix -P 0.001 -C 2 --samples /data/corals/alldata_class/coral_samples_allsites_controls.txt
+
+#p = 0.05
+perl /opt/trinityrnaseq/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix /data/corals/alldata_class/RSEM.isoform.TMM.EXPR.matrix -P 0.05 -C 2 --samples /data/corals/alldata_class/coral_samples_allsites_controls.txt
+
+```
 
 
+Run DGE just heat stress
 
+```{bash}
+nohup perl /opt/trinityrnaseq/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix RSEM.isoform.counts.matrix --method edgeR --samples_file coral_samples_allsites_heat.txt
+
+#cd into edgeR folder, then run this 
+#can run with diff p values and diff fold changes (-c 2 is 4 fold change, -c 1 is 2 fold change) 
+#first p = 0.001
+perl /opt/trinityrnaseq/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix /data/corals/alldata_class/RSEM.isoform.TMM.EXPR.matrix -P 0.001 -C 2 --samples /data/corals/alldata_class/coral_samples_allsites_heat.txt
+
+#p = 0.05
+perl /opt/trinityrnaseq/Analysis/DifferentialExpression/analyze_diff_expr.pl --matrix /data/corals/alldata_class/RSEM.isoform.TMM.EXPR.matrix -P 0.05 -C 2 --samples /data/corals/alldata_class/coral_samples_allsites_heat.txt
+
+```
 
 
 

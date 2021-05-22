@@ -1,0 +1,151 @@
+---
+title: "MakeDElists"
+author: "Melissa Naugle"
+date: "5/14/2021"
+output: html_document
+---
+
+```{r setup}
+setwd(dir = "~/Desktop/GitHub/RNAseq_allsites_Barshisreference/")
+rm( list = ls())
+graphics.off()
+library(tidyverse) 
+library(reshape2) 
+library(ggthemes) 
+library(VennDiagram)
+library(dplyr)
+```
+
+
+#Make DE lists for 
+#1. center of venn (shared Heat v control at all sites) 
+#2. Heat v control in at least 2 sites 
+
+
+```{r}
+#Read in data files, selecting only the contig name (ContigID) column
+
+CoPtE_CoPtH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_CoPt_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CoPtE_CoPtH <- setNames(cbind(rownames(CoPtE_CoPtH), CoPtE_CoPtH, row.names = NULL), c("ContigID", colnames(CoPtE_CoPtH)))
+head(CoPtE_CoPtH)
+CoPtE_CoPtH <- select(CoPtE_CoPtH, "ContigID")
+
+TeleE_TeleH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Ftele_E_vs_Ftele_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+TeleE_TeleH <- setNames(cbind(rownames(TeleE_TeleH), TeleE_TeleH, row.names = NULL), c("ContigID", colnames(TeleE_TeleH)))
+head(TeleE_TeleH)
+TeleE_TeleH <- select(TeleE_TeleH, "ContigID")
+
+AluE_AluH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Falu_E_vs_Falu_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+AluE_AluH <- setNames(cbind(rownames(AluE_AluH), AluE_AluH, row.names = NULL), c("ContigID", colnames(AluE_AluH)))
+head(AluE_AluH)
+AluE_AluH <- select(AluE_AluH, "ContigID")
+
+CanE_CanH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Can_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CanE_CanH <- setNames(cbind(rownames(CanE_CanH), CanE_CanH, row.names = NULL), c("ContigID", colnames(CanE_CanH)))
+head(CanE_CanH)
+CanE_CanH <- select(CanE_CanH, "ContigID")
+
+VatE_VatH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Vat_E_vs_Vat_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+VatE_VatH <- setNames(cbind(rownames(VatE_VatH), VatE_VatH, row.names = NULL), c("ContigID", colnames(VatE_VatH)))
+head(VatE_VatH)
+VatE_VatH <- select(VatE_VatH, "ContigID")
+
+#Use intersect function to find contig names shared between comparisons. 
+
+area1 <- CanE_CanH
+area2 <- CoPtE_CoPtH
+area3 <- AluE_AluH
+area4 <- VatE_VatH
+area5 <- TeleE_TeleH
+
+n12 <- intersect(area1,area2, by="ContigID")
+n13 <- intersect(area1,area3, by="ContigID")
+n14 <- intersect(area1,area4, by="ContigID")
+n15 <- intersect(area1,area5, by="ContigID")
+n23 <- intersect(area2,area3, by="ContigID")
+n24 <- intersect(area2,area4, by="ContigID")
+n25 <- intersect(area2,area5, by="ContigID")
+n34 <- intersect(area3,area4, by="ContigID")
+n35 <- intersect(area3,area5, by="ContigID")
+n45 <- intersect(area4,area5, by="ContigID")
+
+n123 <- intersect(n12,area3, by="ContigID")
+n124 <- intersect(n12,area4, by="ContigID")
+n125 <- intersect(n12,area5, by="ContigID")
+n134 <- intersect(n13,area4, by="ContigID")
+n135 <- intersect(n13,area5, by="ContigID")
+n145 <- intersect(n14,area5, by="ContigID")
+n234 <- intersect(n23,area4, by="ContigID")
+n235 <- intersect(n23,area5, by="ContigID")
+n245 <- intersect(n24,area5, by="ContigID")
+n345 <- intersect(n34,area5, by="ContigID")
+
+n1234 <- intersect(n123,area4, by="ContigID")
+n1235 <- intersect(n123,area5, by="ContigID")
+n1245 <- intersect(n124,area5, by="ContigID")
+n1345 <- intersect(n134,area5, by="ContigID")
+n2345 <- intersect(n234,area5, by="ContigID")
+n12345 <- intersect(n1234,area5, by-"ContigID")
+
+write.csv(n12345, "../data/DE_comparison_lists/DE_middle_of_venn_classic_FDR0.05.csv", row.names = F)
+
+#make csv of genes DE bw heat and control in > 2 groups 
+
+shared <- rbind(n12, n13, by = "ContigID")
+shared <- rbind(shared, n14, by = "ContigID")
+shared <- rbind(shared, n15, by = "ContigID")
+shared <- rbind(shared, n23, by = "ContigID")
+shared <- rbind(shared, n24, by = "ContigID")
+shared <- rbind(shared, n25, by = "ContigID")
+shared <- rbind(shared, n34, by = "ContigID")
+shared <- rbind(shared, n35, by = "ContigID")
+shared <- rbind(shared, n45, by = "ContigID")
+
+head(shared)
+DE_heat_control_atleast2sites <- distinct(shared)
+
+write.csv(DE_heat_control_atleast2sites, "../data/DE_comparison_lists/DE_heat_control_atleast2sites_05_14_21.csv", row.names = F)
+#not sure about the math here but it's probs fine 
+369+110+71+43+38+59+50+66+83+42+69+123+58+134+43+38+69+73+126+158+108+91+101+45+476 #25
+
+```
+
+#Control high v low pollution 
+
+	-cannery v vatia
+	-cannery v tele
+	-coco v vatia
+	-coco v tele 
+	
+if gene present in any of these comparisons, include in list  
+
+```{r}
+CanEvVatE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Vat_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CanEvVatE <- setNames(cbind(rownames(CanEvVatE), CanEvVatE, row.names = NULL), c("ContigID", colnames(CanEvVatE)))
+CanEvVatE <- select(CanEvVatE, "ContigID")
+
+CanEvTeleE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Ftele_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CanEvTeleE <- setNames(cbind(rownames(CanEvTeleE), CanEvTeleE, row.names = NULL), c("ContigID", colnames(CanEvTeleE)))
+CanEvTeleE <- select(CanEvTeleE, "ContigID")
+
+CocoEvVatE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_Vat_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CocoEvVatE <- setNames(cbind(rownames(CocoEvVatE), CocoEvVatE, row.names = NULL), c("ContigID", colnames(CocoEvVatE)))
+CocoEvVatE <- select(CocoEvVatE, "ContigID")
+
+CocoEvTeleE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_Ftele_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CocoEvTeleE <- setNames(cbind(rownames(CocoEvTeleE), CocoEvTeleE, row.names = NULL), c("ContigID", colnames(CocoEvTeleE)))
+CocoEvTeleE <- select(CocoEvTeleE, "ContigID")
+
+
+shared <- rbind(CanEvVatE, CanEvTeleE, by = "ContigID")
+shared <- rbind(shared, CocoEvVatE, by = "ContigID")
+shared <- rbind(shared, CocoEvTeleE, by = "ContigID")
+
+head(shared)
+DE_control_highvlowpollution <- distinct(shared)
+
+write.csv(DE_control_highvlowpollution, "../data/DE_comparison_lists/DE_control_highvlowpollution_05_14_21.csv", row.names = F)
+
+```
+
+

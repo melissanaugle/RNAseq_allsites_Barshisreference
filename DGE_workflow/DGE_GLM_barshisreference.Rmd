@@ -74,8 +74,8 @@ summary(keep)'
 
 TMM normalization is performed to eliminate composition biases between libraries.
 
-14183 after filtering
-20138 filtered out
+15109 after filtering
+18387 filtered out
 
 ```{r norm_and_write_list}
 
@@ -95,6 +95,7 @@ y <- calcNormFactors(y)
 normList <- cpm(y, normalized.lib.sizes = T)
 nrow(normList)
 write.table(normList, file = "../GLM_edgeR_outputs/glmQLF_normalizedCounts.csv", sep=",", row.names=T)
+
 
 ```
 

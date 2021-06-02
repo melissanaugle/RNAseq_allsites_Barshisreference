@@ -88,6 +88,7 @@ y <- y[keep,,keep.lib.sizes=FALSE]
 summary(keep)
 
 #normalize library sizes (use trimmed mean m values to eliminate composition biases)
+# The default method for computing these scale factors uses a trimmed mean of M-values (TMM) between each pair of samples.
 y <- calcNormFactors(y)
 
 #not included in Jacoby's code 

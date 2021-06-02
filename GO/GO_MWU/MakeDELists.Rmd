@@ -25,27 +25,27 @@ library(dplyr)
 ```{r}
 #Read in data files, selecting only the contig name (ContigID) column
 
-CoPtE_CoPtH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_CoPt_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CoPtE_CoPtH <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_CoPt_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
 CoPtE_CoPtH <- setNames(cbind(rownames(CoPtE_CoPtH), CoPtE_CoPtH, row.names = NULL), c("ContigID", colnames(CoPtE_CoPtH)))
 head(CoPtE_CoPtH)
 CoPtE_CoPtH <- select(CoPtE_CoPtH, "ContigID")
 
-TeleE_TeleH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Ftele_E_vs_Ftele_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+TeleE_TeleH <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Ftele_E_vs_Ftele_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
 TeleE_TeleH <- setNames(cbind(rownames(TeleE_TeleH), TeleE_TeleH, row.names = NULL), c("ContigID", colnames(TeleE_TeleH)))
 head(TeleE_TeleH)
 TeleE_TeleH <- select(TeleE_TeleH, "ContigID")
 
-AluE_AluH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Falu_E_vs_Falu_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+AluE_AluH <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Falu_E_vs_Falu_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
 AluE_AluH <- setNames(cbind(rownames(AluE_AluH), AluE_AluH, row.names = NULL), c("ContigID", colnames(AluE_AluH)))
 head(AluE_AluH)
 AluE_AluH <- select(AluE_AluH, "ContigID")
 
-CanE_CanH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Can_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CanE_CanH <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Can_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
 CanE_CanH <- setNames(cbind(rownames(CanE_CanH), CanE_CanH, row.names = NULL), c("ContigID", colnames(CanE_CanH)))
 head(CanE_CanH)
 CanE_CanH <- select(CanE_CanH, "ContigID")
 
-VatE_VatH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Vat_E_vs_Vat_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+VatE_VatH <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Vat_E_vs_Vat_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
 VatE_VatH <- setNames(cbind(rownames(VatE_VatH), VatE_VatH, row.names = NULL), c("ContigID", colnames(VatE_VatH)))
 head(VatE_VatH)
 VatE_VatH <- select(VatE_VatH, "ContigID")
@@ -87,7 +87,7 @@ n1345 <- intersect(n134,area5, by="ContigID")
 n2345 <- intersect(n234,area5, by="ContigID")
 n12345 <- intersect(n1234,area5, by-"ContigID")
 
-write.csv(n12345, "../data/DE_comparison_lists/DE_middle_of_venn_classic_FDR0.05.csv", row.names = F)
+#write.csv(n12345, "../../data/DE_comparison_lists/DE_middle_of_venn_classic_FDR0.05.csv", row.names = F)
 
 #make csv of genes DE bw heat and control in > 2 groups 
 
@@ -102,13 +102,53 @@ shared <- rbind(shared, n35, by = "ContigID")
 shared <- rbind(shared, n45, by = "ContigID")
 
 head(shared)
+nrow(shared)
 DE_heat_control_atleast2sites <- distinct(shared)
+nrow(DE_heat_control_atleast2sites)
 
 write.csv(DE_heat_control_atleast2sites, "../data/DE_comparison_lists/DE_heat_control_atleast2sites_05_14_21.csv", row.names = F)
 #not sure about the math here but it's probs fine 
-369+110+71+43+38+59+50+66+83+42+69+123+58+134+43+38+69+73+126+158+108+91+101+45+476 #25
 
 ```
+
+#Heat high v low pollution 
+
+	-cannery v vatia
+	-cannery v tele
+	-coco v vatia
+	-coco v tele 
+	
+if gene present in any of these comparisons, include in list  
+
+```{r}
+CanHvVatH <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_H_vs_Vat_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CanHvVatH <- setNames(cbind(rownames(CanHvVatH), CanHvVatH, row.names = NULL), c("ContigID", colnames(CanHvVatH)))
+CanHvVatH <- select(CanHvVatH, "ContigID")
+
+CanHvTeleH <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_H_vs_Ftele_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CanHvTeleH <- setNames(cbind(rownames(CanHvTeleH), CanHvTeleH, row.names = NULL), c("ContigID", colnames(CanHvTeleH)))
+CanHvTeleH <- select(CanHvTeleH, "ContigID")
+
+CocoHvVatH <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_H_vs_Vat_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CocoHvVatH <- setNames(cbind(rownames(CocoHvVatH), CocoHvVatH, row.names = NULL), c("ContigID", colnames(CocoHvVatH)))
+CocoHvVatH <- select(CocoHvVatH, "ContigID")
+
+CocoHvTeleH <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_H_vs_Ftele_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CocoHvTeleH <- setNames(cbind(rownames(CocoHvTeleH), CocoHvTeleH, row.names = NULL), c("ContigID", colnames(CocoHvTeleH)))
+CocoHvTeleH <- select(CocoHvTeleH, "ContigID")
+
+
+shared <- rbind(CanHvVatH, CanHvTeleH, by = "ContigID")
+shared <- rbind(shared, CocoHvVatH, by = "ContigID")
+shared <- rbind(shared, CocoHvTeleH, by = "ContigID")
+
+head(shared)
+DE_heat_highvlowpollution <- distinct(shared)
+
+write.csv(DE_heat_highvlowpollution, "../../data/DE_comparison_lists/DE_heat_highvlowpollution_06_02_21.csv", row.names = F)
+
+```
+
 
 #Control high v low pollution 
 
@@ -120,19 +160,19 @@ write.csv(DE_heat_control_atleast2sites, "../data/DE_comparison_lists/DE_heat_co
 if gene present in any of these comparisons, include in list  
 
 ```{r}
-CanEvVatE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Vat_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CanEvVatE <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Vat_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
 CanEvVatE <- setNames(cbind(rownames(CanEvVatE), CanEvVatE, row.names = NULL), c("ContigID", colnames(CanEvVatE)))
 CanEvVatE <- select(CanEvVatE, "ContigID")
 
-CanEvTeleE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Ftele_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CanEvTeleE <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Ftele_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
 CanEvTeleE <- setNames(cbind(rownames(CanEvTeleE), CanEvTeleE, row.names = NULL), c("ContigID", colnames(CanEvTeleE)))
 CanEvTeleE <- select(CanEvTeleE, "ContigID")
 
-CocoEvVatE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_Vat_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CocoEvVatE <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_Vat_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
 CocoEvVatE <- setNames(cbind(rownames(CocoEvVatE), CocoEvVatE, row.names = NULL), c("ContigID", colnames(CocoEvVatE)))
 CocoEvVatE <- select(CocoEvVatE, "ContigID")
 
-CocoEvTeleE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_Ftele_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CocoEvTeleE <-read.csv("../../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_Ftele_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
 CocoEvTeleE <- setNames(cbind(rownames(CocoEvTeleE), CocoEvTeleE, row.names = NULL), c("ContigID", colnames(CocoEvTeleE)))
 CocoEvTeleE <- select(CocoEvTeleE, "ContigID")
 
@@ -147,5 +187,3 @@ DE_control_highvlowpollution <- distinct(shared)
 write.csv(DE_control_highvlowpollution, "../data/DE_comparison_lists/DE_control_highvlowpollution_05_14_21.csv", row.names = F)
 
 ```
-
-

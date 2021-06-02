@@ -45,9 +45,11 @@ Filtering deets: as described in (Chen et al. 2016)
 
 Normalization deets: trimmed mean m values to eliminate composition biases
 
+This type of filtering and normalization means that the normalized counts are diff for the heats only v controls only v all samples. Is this okay? I suspect it is but they say defs DO NOT filter by DGE 
+
 ```{r}
 # This creates an object called "datExpr" that contains the normalized counts file output from DESeq2
-datExpr = read.csv("../GLM_edgeR_outputs/controls/glmQLF_normalizedCounts_controls.csv")
+datExpr = read.csv("../GLM_edgeR_outputs/heats_only/glmQLF_normalizedCounts_heatsonly.csv")
 # "head" the file to preview it
 head(datExpr) # You see that genes are listed in a column named "X" and samples are in columns
 ```
@@ -90,7 +92,7 @@ if (!gsg$allOK)
 
 Create an object called "datTraits" that contains your trait data
 ```{r}
-datTraits = read.csv("Controls_only_5202021/phenotypedata_justcontrols_05192021.csv")
+datTraits = read.csv("Heats_only_5202021/phenotypedata_justheats_05212021.csv")
 head(datTraits)
 nrow(datTraits)
 #Then form a data frame analogous to expression data that will hold the clinical traits.
@@ -110,11 +112,13 @@ You have finished uploading and formatting expression and trait data. Expression
 
 At this point you will need to identify sample outliers and choose a soft threshold power. These are easy to do and are well documented in the online tutorials.  It is suggested that you cluster samples by expression to identify any outliers before this step. This is provided in the attached R script.
 
-Holly's note: From this plot, we would choose a power of 18 because it's the lowest power for which the scale free topology index reaches 0.90 (red line).
+Tutorial note: From this plot, we would choose a power of 18 because it's the lowest power for which the scale free topology index reaches 0.90 (red line).
 
-Melissa: scale free topology index doesn't pass ~0.82. Is that okay? Continue with 18 for now 
+Melissa: scale free topology index doesn't pass ~0.82. Is that okay? Continue with 14 for now 
 
 Also, sometimes weird stuff happens here and you get this error: "number of items to replace is not a multiple of replacement length", just restart R and all is okay 
+
+https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/faq.html for soft threshold recs 
 
 ```{r}
 # Choose a soft threshold power ------------------------------------
@@ -135,7 +139,8 @@ text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1, col="red")
 
 #Step 2: Construct a gene co-expression network and identify modules
 
-Melissa's note: Isn't this 14? When above step said to use 18?
+Holly chose 14, tutorial chose 18 
+
 
 ```{r}
 #build a adjacency "correlation" matrix

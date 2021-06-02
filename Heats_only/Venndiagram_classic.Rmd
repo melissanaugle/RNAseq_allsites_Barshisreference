@@ -1,0 +1,450 @@
+---
+title: "Venndiagram"
+author: "Melissa Naugle"
+date: "3/25/2021"
+output: html_document
+---
+
+##Barshis reference, all sites, for thesis
+
+#1. Set WD, load packages
+
+```{r setup}
+setwd(dir = "~/Desktop/GitHub/RNAseq_allsites_Barshisreference/")
+rm( list = ls())
+graphics.off()
+library(tidyverse) 
+library(reshape2) 
+library(ggthemes) 
+library(VennDiagram)
+library(dplyr)
+
+```
+
+#2. Read in data files
+
+Here I have files with DEGs between control and treatment at each of the 5 sites
+Could change these to to just look at upregulated or downregulated, or to a diff p value
+
+```{r readdata}
+#Read in data files, selecting only the contig name (ContigID) column
+
+CoPtE_CoPtH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_CoPt_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CoPtE_CoPtH <- setNames(cbind(rownames(CoPtE_CoPtH), CoPtE_CoPtH, row.names = NULL), c("ContigID", colnames(CoPtE_CoPtH)))
+head(CoPtE_CoPtH)
+CoPtE_CoPtH <- select(CoPtE_CoPtH, "ContigID")
+
+TeleE_TeleH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Ftele_E_vs_Ftele_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+TeleE_TeleH <- setNames(cbind(rownames(TeleE_TeleH), TeleE_TeleH, row.names = NULL), c("ContigID", colnames(TeleE_TeleH)))
+head(TeleE_TeleH)
+TeleE_TeleH <- select(TeleE_TeleH, "ContigID")
+
+AluE_AluH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Falu_E_vs_Falu_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+AluE_AluH <- setNames(cbind(rownames(AluE_AluH), AluE_AluH, row.names = NULL), c("ContigID", colnames(AluE_AluH)))
+head(AluE_AluH)
+AluE_AluH <- select(AluE_AluH, "ContigID")
+
+CanE_CanH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Can_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CanE_CanH <- setNames(cbind(rownames(CanE_CanH), CanE_CanH, row.names = NULL), c("ContigID", colnames(CanE_CanH)))
+head(CanE_CanH)
+CanE_CanH <- select(CanE_CanH, "ContigID")
+
+VatE_VatH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Vat_E_vs_Vat_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+VatE_VatH <- setNames(cbind(rownames(VatE_VatH), VatE_VatH, row.names = NULL), c("ContigID", colnames(VatE_VatH)))
+head(VatE_VatH)
+VatE_VatH <- select(VatE_VatH, "ContigID")
+
+```
+
+#3. Make categories for venn diagram
+
+```{r make_venn_categories}
+#Use intersect function to find contig names shared between comparisons. 
+
+area1 <- CanE_CanH
+area2 <- CoPtE_CoPtH
+area3 <- AluE_AluH
+area4 <- VatE_VatH
+area5 <- TeleE_TeleH
+
+n12 <- intersect(area1,area2, by="ContigID")
+n13 <- intersect(area1,area3, by="ContigID")
+n14 <- intersect(area1,area4, by="ContigID")
+n15 <- intersect(area1,area5, by="ContigID")
+n23 <- intersect(area2,area3, by="ContigID")
+n24 <- intersect(area2,area4, by="ContigID")
+n25 <- intersect(area2,area5, by="ContigID")
+n34 <- intersect(area3,area4, by="ContigID")
+n35 <- intersect(area3,area5, by="ContigID")
+n45 <- intersect(area4,area5, by="ContigID")
+
+n123 <- intersect(n12,area3, by="ContigID")
+n124 <- intersect(n12,area4, by="ContigID")
+n125 <- intersect(n12,area5, by="ContigID")
+n134 <- intersect(n13,area4, by="ContigID")
+n135 <- intersect(n13,area5, by="ContigID")
+n145 <- intersect(n14,area5, by="ContigID")
+n234 <- intersect(n23,area4, by="ContigID")
+n235 <- intersect(n23,area5, by="ContigID")
+n245 <- intersect(n24,area5, by="ContigID")
+n345 <- intersect(n34,area5, by="ContigID")
+
+n1234 <- intersect(n123,area4, by="ContigID")
+n1235 <- intersect(n123,area5, by="ContigID")
+n1245 <- intersect(n124,area5, by="ContigID")
+n1345 <- intersect(n134,area5, by="ContigID")
+n2345 <- intersect(n234,area5, by="ContigID")
+n12345 <- intersect(n1234,area5, by-"ContigID")
+
+
+```
+
+#4. Make Classic Venn Diagrams
+
+This script makes 2 diagrams
+1. 3 circle venn with Coconut Point, Faga'alu, and Faga'tele bw heat and control
+2. 5 circle venn with all sites bw heat and control
+
+Note: the venn.plot + grid.draw code doesn't work if you run it line by line, you need to run the entire chunk or highlight all the code and run at the same time 
+
+Other options:
+draw.single.venn() = normal venn diagram with 2 circles
+draw.quad.venn() = 4 circle venn diagram
+
+```{r make_venn}
+#Plot Venn diagram with numbers generated above
+
+#Can do three sites
+venn.plot <- draw.triple.venn( 
+  area1 = nrow(area1), area2 = nrow(area2), area3 = nrow(area3), 
+  n12 = nrow(n12), n13 = nrow(n13), n23 = nrow(n23), n123 = nrow(n123), 
+  #make sure this is in the correct order
+  category = c("Cannery", "Coconut Point", "Faga'alu"), 
+  #choose colors
+  fill = c("skyblue", "mediumorchid", "salmon"), 
+  #change line type (this means no line)
+  lty = "blank", 
+  #change size of category labels 
+  cat.cex = 1.2,
+  #change size of labels
+  cex = 2
+);
+
+#Save the  Venn diagram
+grid.newpage()
+png("../Figures/Classic_EdgeR/venn_controlvheat_3sites_P0.05.png")
+grid.draw(venn.plot)
+dev.off()
+
+#or five sites!
+venn.plot <- draw.quintuple.venn(
+  area1 = nrow(area1), area2 = nrow(area2), area3 = nrow(area3), area4 = nrow(area4), area5 = nrow(area5),
+  n12 = nrow(n12), n13 = nrow(n13), n14 = nrow(n14) , n15 = nrow(n15),
+  n23 = nrow(n23), n24 = nrow(n24), n25 = nrow(n25), 
+  n34 = nrow(n34), n35 = nrow(n35), n45 = nrow(n45), 
+  n123 = nrow(n123), n124 = nrow(n124), n125 = nrow(n125), 
+  n134 = nrow(n134), n135 = nrow(n135), n145 = nrow(n145), 
+  n234 = nrow(n234), n235 = nrow(n235), n245 = nrow(n245), 
+  n345 = nrow(n345), n1234 = nrow(n1234), n1235 = nrow(n1235),
+  n1245 = nrow(n1245), n1345 = nrow(n1345), n2345 = nrow(n2345), n12345 = nrow(n12345), 
+  category = c("Cannery", "Coconut Point", "Faga'alu", "Vatia", "Faga'tele"), 
+  fill = c("salmon", "pink", "mediumorchid", "palegreen", "skyblue"), 
+  #change line type (this is a solid line)
+  lty = 1, 
+  #change size of category labels
+  cat.cex = 1.2,
+  #this makes labels prettier and fit on page
+  cat.just=list(c(0.6,1) , c(0,-5) , c(0,0) , c(1,1) , c(1,-4))
+);
+
+#Save the  Venn diagram
+grid.newpage()
+png("../Figures/Classic_EdgeR/venn_controlvheat_5sites_P0.05.png")
+grid.draw(venn.plot)
+dev.off()
+
+```
+
+
+#Venn to compare to Barshis
+#now that I'm looking again- idk if this is right 5/14/21
+Must run this right after previous chunk to get correct n groups
+
+```{r venn_barshis_genes}
+barshisgenes_full <- read.csv("../barshis2012_DElist.csv", skip = 4)
+head(barshisgenes)
+barshisgenes_full$ContigID <- barshisgenes_full$Ourcontigname
+nrow(barshisgenes_full)
+barshisgenes <- select(barshisgenes_full, "ContigID")
+
+shared1 <- subset(barshisgenes, ContigID %in% n12$ContigID)
+shared2 <- subset(barshisgenes, ContigID %in% n13$ContigID)
+shared3 <- subset(barshisgenes, ContigID %in% n14$ContigID)
+shared4 <- subset(barshisgenes, ContigID %in% n15$ContigID)
+shared5 <- subset(barshisgenes, ContigID %in% n23$ContigID)
+shared6 <- subset(barshisgenes, ContigID %in% n24$ContigID)
+shared7 <- subset(barshisgenes, ContigID %in% n25$ContigID)
+shared8 <- subset(barshisgenes, ContigID %in% n34$ContigID)
+shared9 <- subset(barshisgenes, ContigID %in% n35$ContigID)
+shared10 <- subset(barshisgenes, ContigID %in% n45$ContigID)
+
+
+shared <- rbind(shared1, shared2, by = "ContigID")
+shared <- rbind(shared, shared3, by = "ContigID")
+shared <- rbind(shared, shared4, by = "ContigID")
+shared <- rbind(shared, shared5, by = "ContigID")
+shared <- rbind(shared, shared6, by = "ContigID")
+shared <- rbind(shared, shared7, by = "ContigID")
+shared <- rbind(shared, shared8, by = "ContigID")
+shared <- rbind(shared, shared9, by = "ContigID")
+shared <- rbind(shared, shared10, by = "ContigID")
+
+
+shared_cross <- intersect(barshisgenes,shared, by="ContigID")
+
+venn.plot <- draw.pairwise.venn(area1 = nrow(barshisgenes), area2 = nrow(shared), cross.area = nrow(shared_cross), category = c("Barshis genes", "Our genes \n (in > 2 sites)"), fill = c("darkseagreen1", "lemonchiffon1"), lty = 1, cat.cex = 1.6, cat.pos = 1, cex = 3)
+
+
+#Save the  Venn diagram
+grid.newpage()
+png("../Figures/Classic_EdgeR/venn_controlvheat_5sites_P0.05_barshisshared_allheatvcontrol_atleast2sites.png")
+grid.draw(venn.plot)
+dev.off()
+
+#look at these genes
+
+DE_heatvcontrol_atleast2sites <- subset(barshisgenes_full, ContigID %in% shared_cross$ContigID)
+DE_heatvcontrol_atleast2sites <- select(DE_heatvcontrol_atleast2sites, 'ContigID', "topnrMatch", 'Uniprot.Description')
+
+write_csv(DE_heatvcontrol_atleast2sites, "../data/DE_comparison_lists/Genes_Barshis2013_MVHV_DE_heatcontrol_atleast2sites_heatcontrol.csv")
+
+```
+
+
+
+
+Quad venn of most and least polluted sites
+
+```{r quadvenn}
+#reassign values
+
+area1 <- CanE_CanH
+area2 <- CoPtE_CoPtH
+area3 <- VatE_VatH
+area4 <- TeleE_TeleH
+
+n12 <- intersect(area1,area2, by="ContigID")
+n13 <- intersect(area1,area3, by="ContigID")
+n14 <- intersect(area1,area4, by="ContigID")
+n23 <- intersect(area2,area3, by="ContigID")
+n24 <- intersect(area2,area4, by="ContigID")
+n34 <- intersect(area3,area4, by="ContigID")
+n123 <- intersect(n12,area3, by="ContigID")
+n124 <- intersect(n12,area4, by="ContigID")
+n134 <- intersect(n13,area4, by="ContigID")
+n234 <- intersect(n23,area4, by="ContigID")
+n1234 <- intersect(n123,area4, by="ContigID")
+
+venn.plot <- draw.quad.venn(area1 = nrow(area1), area2 = nrow(area2), area3 = nrow(area3), area4 = nrow(area4),
+               n12 = nrow(n12), n13 = nrow(n13), n14 = nrow(n14),
+               n23 = nrow(n23), n24 = nrow(n24),
+               n34 = nrow(n34), 
+               n123 = nrow(n123), n124 = nrow(n124),
+               n134 = nrow(n134),
+               n234 = nrow(n234),
+               n1234 = nrow(n1234),
+  category = c("Cannery", "Coconut Point", "Vatia", "Faga'tele"), 
+  fill = c("salmon", "pink", "palegreen", "skyblue"), 
+  #change line type (this is a solid line)
+  lty = 1, 
+  #change size of category labels
+  cat.cex = 1.1)
+
+
+#Save the  Venn diagram
+grid.newpage()
+png("../Figures/Classic_EdgeR/venn_controlvheat_4sites_P0.05_classic.png")
+grid.draw(venn.plot)
+dev.off()
+    
+```
+#Venn for just control
+
+```{r venn_control}
+CoPtE_CanE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_CoPt_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CoPtE_CanE <- setNames(cbind(rownames(CoPtE_CanE), CoPtE_CanE, row.names = NULL), c("ContigID", colnames(CoPtE_CanE)))
+head(CoPtE_CanE)
+CoPtE_CanE <- select(CoPtE_CanE, "ContigID")
+
+TeleE_VatE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Ftele_H_vs_Vat_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+TeleE_VatE <- setNames(cbind(rownames(TeleE_VatE), TeleE_VatE, row.names = NULL), c("ContigID", colnames(TeleE_VatE)))
+head(TeleE_VatE)
+TeleE_VatE <- select(TeleE_VatE, "ContigID")
+
+CoPtE_AluE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.CoPt_E_vs_Falu_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CoPtE_AluE <- setNames(cbind(rownames(CoPtE_AluE), CoPtE_AluE, row.names = NULL), c("ContigID", colnames(CoPtE_AluE)))
+CoPtE_AluE <- select(CoPtE_AluE, "ContigID")
+
+CanE_AluE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_E_vs_Falu_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CanE_AluE <- setNames(cbind(rownames(CanE_AluE), CanE_AluE, row.names = NULL), c("ContigID", colnames(CanE_AluE)))
+CanE_AluE <- select(CanE_AluE, "ContigID")
+
+AluE_TeleE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Falu_H_vs_Ftele_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+AluE_TeleE <- setNames(cbind(rownames(AluE_TeleE), AluE_TeleE, row.names = NULL), c("ContigID", colnames(AluE_TeleE)))
+AluE_TeleE <- select(AluE_TeleE, "ContigID")
+
+AluE_VatE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Falu_E_vs_Vat_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+AluE_VatE <- setNames(cbind(rownames(AluE_VatE), AluE_VatE, row.names = NULL), c("ContigID", colnames(AluE_VatE)))
+AluE_VatE <- select(AluE_VatE, "ContigID")
+
+
+#coco v can / tele v vat
+
+shared <- intersect(CoPtE_CanE,TeleE_VatE, by="ContigID")
+
+venn.plot <- draw.pairwise.venn(area1 = nrow(CoPtE_CanE), area2 = nrow(TeleE_VatE), cross.area = nrow(shared), category = c("Coconut Point Control v \n Cannery Control", "Faga'tele Control v \n Vatia Control"), fill = c("salmon", "skyblue"), lty = 1, cat.cex = 1.2, cat.pos = 1, cex = 2)
+
+#Save the  Venn diagram
+grid.newpage()
+png("../Figures/Classic_EdgeR/venn_controls_only_P0.05_cancoco_televat.png")
+grid.draw(venn.plot)
+dev.off()
+
+#med and high sites 
+#coco v can / coco v alu / can v alu 
+
+area1 <- CoPtE_CanE
+area2 <- CoPtE_AluE
+area3 <- CanE_AluE
+
+n12 <- intersect(area1,area2, by="ContigID")
+n13 <- intersect(area1,area3, by="ContigID")
+n23 <- intersect(area2,area3, by="ContigID")
+n123 <- intersect(n12,area3, by="ContigID")
+
+
+venn.plot <- draw.triple.venn( 
+  area1 = nrow(area1), area2 = nrow(area2), area3 = nrow(area3), 
+  n12 = nrow(n12), n13 = nrow(n13), n23 = nrow(n23), n123 = nrow(n123), 
+  #make sure this is in the correct order
+  category = c("Coconut Point Control v \n Cannery Control", "Coconut Point Control v \n Faga'alu Control", "Cannery Control v \n Faga'alu Control"), 
+  #choose colors
+  fill = c("skyblue", "mediumorchid", "salmon"), 
+  #change line type (this means no line)
+  lty = "blank", 
+  #change size of category labels 
+  cat.cex = 1.2,
+  #change size of labels
+  cex = 2,
+  cat.just=list(c(0,1) , c(1,1) , c(0.5,0))
+);
+
+#Save the  Venn diagram
+grid.newpage()
+png("../Figures/Classic_EdgeR/venn_controls_only_P0.05_cancoco_canalu_cocoalu_medhigh.png")
+grid.draw(venn.plot)
+dev.off()
+
+#med and low sites
+#tele v vat / tele v alu / vat v alu 
+
+area1 <- TeleE_VatE
+area2 <- AluE_TeleE
+area3 <- AluE_VatE
+
+n12 <- intersect(area1,area2, by="ContigID")
+n13 <- intersect(area1,area3, by="ContigID")
+n23 <- intersect(area2,area3, by="ContigID")
+n123 <- intersect(n12,area3, by="ContigID")
+
+
+venn.plot <- draw.triple.venn( 
+  area1 = nrow(area1), area2 = nrow(area2), area3 = nrow(area3), 
+  n12 = nrow(n12), n13 = nrow(n13), n23 = nrow(n23), n123 = nrow(n123), 
+  #make sure this is in the correct order
+  category = c("Faga'tele Control v \n Vatia Control", "Faga'alu Control v \n Faga'tele Control", "Faga'alu Control v \n Vatia Control"), 
+  #choose colors
+  fill = c("skyblue", "mediumorchid", "salmon"), 
+  #change line type (this means no line)
+  lty = "blank", 
+  #change size of category labels 
+  cat.cex = 1.2,
+  #change size of labels
+  cex = 2,
+  cat.just=list(c(0,1) , c(1,1) , c(0.5,0))
+);
+
+#Save the  Venn diagram
+grid.newpage()
+png("../Figures/Classic_EdgeR/venn_controls_only_P0.05_televat_telealu_vatalu_lowmed.png")
+grid.draw(venn.plot)
+dev.off()
+
+
+```
+
+#Just heat stress
+
+```{r venn_heat}
+CoPtH_CanH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Can_H_vs_CoPt_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+CoPtH_CanH <- setNames(cbind(rownames(CoPtH_CanH), CoPtH_CanH, row.names = NULL), c("ContigID", colnames(CoPtH_CanH)))
+head(CoPtH_CanH)
+CoPtH_CanH <- select(CoPtH_CanH, "ContigID")
+
+TeleH_VatH <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Ftele_H_vs_Vat_H.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+TeleH_VatH <- setNames(cbind(rownames(TeleH_VatH), TeleH_VatH, row.names = NULL), c("ContigID", colnames(TeleH_VatH)))
+head(TeleH_VatH)
+TeleH_VatH <- select(TeleH_VatH, "ContigID")
+
+
+#coco v can / tele v vat
+
+shared <- intersect(CoPtH_CanH,TeleH_VatH, by="ContigID")
+
+venn.plot <- draw.pairwise.venn(area1 = nrow(CoPtH_CanH), area2 = nrow(TeleH_VatH), cross.area = nrow(shared), category = c("Coconut Point Heat Stress v \n Cannery Heat Stress", "Faga'tele Heat Stress v \n Vatia Heat Stress"), fill = c("salmon", "skyblue"), lty = 1, cat.cex = 1.2, cat.pos = 1, cex = 2)
+
+#Save the  Venn diagram
+grid.newpage()
+png("../Figures/Classic_EdgeR/venn_heats_only_P0.05_cancoco_televat.png")
+grid.draw(venn.plot)
+dev.off()
+
+```
+
+
+
+
+#Compare Barshis Frontload
+#not the correct comparison - must fix this 
+
+```{r venn_televatVbarshisfrontload}
+
+barshisgenes <- read.csv("../barshis_frontloadedgenes_updowncombined.csv", skip = 4)
+head(barshisgenes)
+barshisgenes$ContigID <- barshisgenes$ContigName
+nrow(barshisgenes)
+barshisgenes <- select(barshisgenes, "ContigID")
+
+TeleE_VatE <-read.csv("../data/EdgeR_P0.05/pairwise_comparisons/RSEM.isoform.counts.matrix.Ftele_H_vs_Vat_E.edgeR.DE_results.P0.05_C2.DE.subset", sep = "\t")
+TeleE_VatE <- setNames(cbind(rownames(TeleE_VatE), TeleE_VatE, row.names = NULL), c("ContigID", colnames(TeleE_VatE)))
+head(TeleE_VatE)
+TeleE_VatE <- select(TeleE_VatE, "ContigID")
+
+shared <- intersect(barshisgenes,TeleE_VatE, by="ContigID")
+
+venn.plot <- draw.pairwise.venn(area1 = nrow(barshisgenes), area2 = nrow(TeleE_VatE), cross.area = nrow(shared), category = c("Barshis genes", "Our genes \n (DE Faga'tele and Vatia at control)"), fill = c("darkseagreen1", "lemonchiffon1"), lty = 1, cat.cex = 1.6, cat.just=list(c(1,1.4) , c(-0.1,-0.4)), cex = 3)
+
+
+#Save the  Venn diagram
+grid.newpage()
+png("../Figures/Classic_EdgeR/venn_controlvheat_5sites_P0.05_barshisshared_control_tele_vat.png")
+grid.draw(venn.plot)
+dev.off()
+
+
+
+
+```
+
+
+

@@ -1,0 +1,51 @@
+---
+title: "WGCNA_phenotypedata"
+author: "Melissa Naugle"
+date: "5/21/2021"
+output: html_document
+---
+
+
+```{r}
+setwd("~/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/")
+avgred <- read.csv("../../CBASS_bleachingdata/clean data/avgred_data_normalized_recovery.csv")
+phenotype_heats <- read.csv("Heats_only_5202021/phenotypedata_justheats_05212021.csv")
+
+```
+
+```{r}
+
+avgred <- mutate(avgred, Site = derivedFactor(
+  "Ftele" = (grepl("Faga'tele", avgred$Site)),
+  "Falu" = (grepl("Faga'alu", avgred$Site)),
+  "Vat" = (grepl("Vatia", avgred$Site)),
+  "Can" = (grepl("Cannery", avgred$Site)),
+  "CoPt" = (grepl("Coconut Point", avgred$Site)),
+  method ="first",
+  .default = NA
+))
+
+
+avgred$Sample <- paste0(avgred$Site,"_H_rep",avgred$Colony)
+
+avgred_avgs <- avgred %>%
+  filter(!is.na(t35_normalizedto28)) %>%
+  group_by(Sample) %>%
+  summarise(mean_t35normto28 = mean(t35_normalizedto28), mean_35 = mean(X35), DIN = mean(DIN), pop2016 = mean(pop2016))
+
+
+new_phenotype_heats <- merge(phenotype_heats, avgred_avgs, all = T)
+
+write.csv(new_phenotype_heats, "Heats_only_5202021/phenotypedata_justheats_05212021.csv")
+
+```
+
+
+```{r}
+
+```
+
+
+
+
+

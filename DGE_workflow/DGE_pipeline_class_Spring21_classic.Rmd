@@ -92,8 +92,10 @@ perl /opt/trinityrnaseq/Analysis/DifferentialExpression/analyze_diff_expr.pl --m
 
 Run DGE just controls
 
+Can write 'nohup' before if you want, but I did screen here
+
 ```{bash}
-nohup perl /opt/trinityrnaseq/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix RSEM.isoform.counts.matrix --method edgeR --samples_file coral_samples_allsites_controls.txt
+perl /opt/trinityrnaseq/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix RSEM.isoform.counts.matrix --method edgeR --samples_file coral_samples_allsites_controls.txt
 
 #cd into edgeR folder, then run this 
 #can run with diff p values and diff fold changes (-c 2 is 4 fold change, -c 1 is 2 fold change) 
@@ -109,7 +111,7 @@ perl /opt/trinityrnaseq/Analysis/DifferentialExpression/analyze_diff_expr.pl --m
 Run DGE just heat stress
 
 ```{bash}
-nohup perl /opt/trinityrnaseq/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix RSEM.isoform.counts.matrix --method edgeR --samples_file coral_samples_allsites_heat.txt
+perl /opt/trinityrnaseq/Analysis/DifferentialExpression/run_DE_analysis.pl --matrix RSEM.isoform.counts.matrix --method edgeR --samples_file coral_samples_allsites_heat.txt
 
 #cd into edgeR folder, then run this 
 #can run with diff p values and diff fold changes (-c 2 is 4 fold change, -c 1 is 2 fold change) 

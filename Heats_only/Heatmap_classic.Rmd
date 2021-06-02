@@ -5,6 +5,8 @@ date: "4/26/2021"
 output: html_document
 ---
 
+Heat stress only 
+
 #1. Set WD and load packages
 
 ```{r setup}
@@ -21,10 +23,10 @@ library(RColorBrewer)
 
 ```{r data}
 # load data
-data <- read.table("../data/EdgeR_P0.001/diffExpr.P0.001_C2.matrix.log2.centered.dat", header=TRUE, sep = "\t")
+data <- read.table("../data/Heats_only/diffExpr.P0.05_C2.matrix.log2.centered.dat", header=TRUE, sep = "\t")
 head(data)
 #how many contigs
-nrow(data) 
+nrow(data) #332
 
 #Check for row duplicates
 data[duplicated(data) | duplicated(data, fromLast=TRUE), ]
@@ -34,16 +36,13 @@ data[duplicated(data) | duplicated(data, fromLast=TRUE), ]
 row.order <- hclust(dist(data))$order 
 #cluster columns by sample order 
 names(data)
-col.order <-c(1,2,3,4, #coco E
-              23,24,25,26, #can E
-              9,10,11,12, #alu E
-              31,32,33,34, #vat E
-              16,17,18, #tele E
-              5,6,7,8, #coco H
-              27,28,29,30, #can H
-              13,14,15, #alu H
-              35,36,37,38, #vat H
-              19,20,21,22) #tele H
+col.order <-c(1,2,3,4, #coco H
+              12,13,14,15, #can
+              5,6,7, #alu
+              16,17,18,19, #vat
+              8,9,10,11 #tele
+              )
+
 #re-order matrix according to clustering
 dat_clust <- data[row.order, col.order] # re-order matrix according to clustering
 #reshape into data frame
@@ -69,7 +68,7 @@ g <- ggplot(df_molten_dat, aes(x=treatment,y=Trinity_ID)) +
   #set colors
   low="blue", mid="black", high="orange", 
   #set midpoint, max, min, can change these to change the color scale
-  midpoint=0, limits=c(-5,5)) + 
+  midpoint=mean, limits=c(min,max)) + 
   ylab("Genes") +
   xlab("") +
   ggtitle("") +
@@ -85,5 +84,5 @@ g <- ggplot(df_molten_dat, aes(x=treatment,y=Trinity_ID)) +
 
 g
 
-ggsave("../Figures/Classic_EdgeR/heatmap_p0.001_allheatvcontrol_04_26_21_smallerlimits.png",plot=g)
+ggsave("../Figures/Classic_EdgeR/heats_only/heatmap_p0.05_allsites_06_2_21_clusterbysite.png",plot=g)
 ```

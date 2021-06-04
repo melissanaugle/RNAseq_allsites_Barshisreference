@@ -15,12 +15,12 @@ Also based on Holly's WGCNA tutorial: https://github.com/hdoerr/Rockfish_upwelli
 #Before running the following tutorial, make sure that the following required packages are installed and that you have set the proper working directory.
 ```{r}
 #Only run the following to install BiocManager if not already installed
-#if (!requireNamespace("BiocManager", quietly = TRUE))
-    #install.packages("BiocManager")
-#BiocManager::install()
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install()
 # Only run the following commands once to install WGCNA and flashClust on your computer
-#BiocManager::install("WGCNA")
-#install.packages("flashClust") 
+BiocManager::install("WGCNA")
+install.packages("flashClust") 
 # Load WGCNA and flashClust libraries every time you open R
 library(WGCNA)
 library(flashClust)
@@ -140,6 +140,8 @@ text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1, col="red")
 #Step 2: Construct a gene co-expression network and identify modules
 
 Holly chose 14, tutorial chose 18 
+Recommended by website for signed network between 30-40 samples:14
+https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/faq.html
 
 
 ```{r}

@@ -50,7 +50,7 @@ This type of filtering and normalization means that the normalized counts are di
 
 ```{r}
 # This creates an object called "datExpr" that contains the normalized counts file output from DESeq2
-datExpr = read.csv("../GLM_edgeR_outputs/glmQLF_normalizedCounts.csv")
+datExpr = read.csv("../GLM_edgeR_outputs/controls/glmQLF_normalizedCounts_controls.csv")
 # "head" the file to preview it
 head(datExpr) # You see that genes are listed in a column named "X" and samples are in columns
 ```
@@ -93,7 +93,7 @@ if (!gsg$allOK)
 
 Create an object called "datTraits" that contains your trait data
 ```{r}
-datTraits = read.csv("Allsamples_06_07_2021_simplephenotypes/phenotypedata_allsamples_justtreatments_06072021.csv")
+datTraits = read.csv("Controlsonly_06_05_2021/redo_with_colonylevel_symbiont_phenotypefile/phenotypedata_justcontrols_05192021_symbiontbycolony.csv")
 head(datTraits)
 nrow(datTraits)
 #Then form a data frame analogous to expression data that will hold the clinical traits.
@@ -310,7 +310,7 @@ textMatrix = textMatrix,
 setStdMargins = TRUE,
 cex.text = 0.9,
 zlim = c(-.8,.8),
-main = paste("Module-Trait Correlations at Heat Stress and Control Treatments \n for All Pollution Levels"))
+main = paste("Module-Trait Correlations of Control Treatments \n for All Pollution Levels"))
 dev.off()
 ```
 

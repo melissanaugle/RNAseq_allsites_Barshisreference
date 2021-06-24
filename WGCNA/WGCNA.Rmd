@@ -25,6 +25,7 @@ Also based on Holly's WGCNA tutorial: https://github.com/hdoerr/Rockfish_upwelli
 # Load WGCNA and flashClust libraries every time you open R
 library(WGCNA)
 library(flashClust)
+library(tidyverse)
 library("edgeR")
 library("statmod")
 library("data.table")
@@ -50,7 +51,7 @@ This type of filtering and normalization means that the normalized counts are di
 
 ```{r}
 # This creates an object called "datExpr" that contains the normalized counts file output from DESeq2
-datExpr = read.csv("../GLM_edgeR_outputs/controls/glmQLF_normalizedCounts_controls.csv")
+datExpr = read.csv("../GLM_edgeR_outputs/heats_only/glmQLF_normalizedCounts_heatsonly.csv")
 # "head" the file to preview it
 head(datExpr) # You see that genes are listed in a column named "X" and samples are in columns
 ```
@@ -93,7 +94,7 @@ if (!gsg$allOK)
 
 Create an object called "datTraits" that contains your trait data
 ```{r}
-datTraits = read.csv("Controlsonly_06_05_2021/redo_with_colonylevel_symbiont_phenotypefile/phenotypedata_justcontrols_05192021_symbiontbycolony.csv")
+datTraits = read.csv("Heats_tom_models_06_23_2021/phenotypedata_heats_thermotol_tommodel_06232021.csv")
 head(datTraits)
 nrow(datTraits)
 #Then form a data frame analogous to expression data that will hold the clinical traits.
@@ -115,11 +116,11 @@ At this point you will need to identify sample outliers and choose a soft thresh
 
 Tutorial note: From this plot, we would choose a power of 18 because it's the lowest power for which the scale free topology index reaches 0.90 (red line).
 
-Melissa: scale free topology index doesn't pass ~0.82. Is that okay? Continue with 14 for now 
+Melissa: scale free topology index doesn't pass ~0.82. Is that okay? Continue with 14 for now based on documentation from tutorial: https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/faq.html for soft threshold recs 
 
 Also, sometimes weird stuff happens here and you get this error: "number of items to replace is not a multiple of replacement length", just restart R and all is okay 
 
-https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/faq.html for soft threshold recs 
+
 
 ```{r}
 # Choose a soft threshold power ------------------------------------
@@ -179,7 +180,7 @@ MEs= MEList$eigengenes
 MEDiss= 1-cor(MEs)
 #Cluster module eigengenes
 METree= flashClust(as.dist(MEDiss), method= "average")
-#save(dynamicMods, MEList, MEs, MEDiss, METree, file= "Network_allSamples_signed_RLDfiltered.RData")
+#save(dynamicMods, MEList, MEs, MEDiss, METree, file= "Network_heatSamples_signed_RLDfiltered.RData")
 ```
 
 Then, this plots the tree showing how the eigengenes cluster together
@@ -200,14 +201,14 @@ mergedColors = merge$colors
 #Eigengenes of the new merged modules:
 mergedMEs = merge$newMEs
 #INCLUE THE NEXT LINE TO SAVE TO FILE
-#dev.off()
+dev.off()
 ```
 
 And finally, this plots the dendogram with the module colors below it.
 ```{r}
 #plot dendrogram with module colors below it
 #INCLUE THE NEXT LINE TO SAVE TO FILE
-pdf(file="cluster_allsamples_simplephenotypes.pdf")
+pdf(file="cluster_heatssamples_vatlow.pdf")
 plotDendroAndColors(geneTree, cbind(dynamicColors, mergedColors), c("Dynamic Tree Cut", "Merged dynamic"), dendroLabels= FALSE, hang=0.03, addGuide= TRUE, guideHang=0.05)
 moduleColors = mergedColors
 colorOrder = c("grey", standardColors(50))
@@ -275,8 +276,27 @@ dev.off()
 And volia! You should have a beautiful clustered heatmap showing the correlation of traits and genes.
 
 For further analysis, if you wanted to pull out genes belonging to a certain module, you can use the following command:
+
+And run the following chunk to compare GOterms in the module to GO terms of a type A stress response in Dixon et al 2020:
+
+Don't run this everytime! 
 ```{r}
-names(datExpr)[moduleColors=="pink"]
+module_names <- names(datExpr)[moduleColors=="lightsteelblue1"]
+module_names <- as.data.frame(module_names)
+annot <- read.csv("../data/33496_MasterCombinedAnnotationTable.csv")
+blue_annot <- annot[annot$Ourcontigname%in%module_names$module_names,]
+typeAGO <- read.csv("../../../../Desktop/typeA_Dixon_metaanalysis_mec15535-sup-0002-tables1-s10 copy.csv")
+head(typeAGO)
+blue_annot %>% 
+    mutate(GO=strsplit(GO, " // ")) %>% 
+    unnest(GO)
+
+GOs_inblue <- blue_annot[blue_annot$GO%in%typeAGO$term,]
+#check for dups 
+duplicated(GOs_inblue$Ourcontigname)
+write_csv(GOs_inblue, "GOs_typeA_dixon_lightsteelblue1.csv")
+
+
 ```
 
 #Further analysis and visual comparisons
@@ -299,7 +319,7 @@ par(mar = c(6, 8.5, 3, 3));
 
 ```{r}
 # Display the correlation values within a heatmap plot
-pdf(file="Trait_heatmap_allsamples_06072021.pdf", height=9, width=8)
+pdf(file="Trait_heatmap_controls_phenotype_rank_06232021.pdf", height=9, width=8)
 labeledHeatmap(Matrix = moduleTraitCor,
 xLabels = names(datTraits),
 ySymbols = modLabels,
@@ -308,9 +328,10 @@ colorLabels = FALSE,
 colors = colorRampPalette(c("blue","lightblue","white","coral","red"))(50),
 textMatrix = textMatrix,
 setStdMargins = TRUE,
-cex.text = 0.9,
+cex.text = 0.8,
+cex.lab.x = 0.8,
 zlim = c(-.8,.8),
-main = paste("Module-Trait Correlations of Control Treatments \n for All Pollution Levels"))
+main = paste("Module-Trait Correlations of Heat Treatments \n for All Pollution Levels"))
 dev.off()
 ```
 
@@ -324,7 +345,7 @@ par(mar = c(6, 8.5, 3, 3));
 mct=table(moduleColors)
 mct[modLabels]
 x=barplot(mct[rev(modLabels)],horiz=T,las=1,xlim=c(0,8000),col=rev(modLabels))
-text(mct[rev(modLabels)]+labelShift,y=x,mct[rev(modLabels)],cex=0.9) 
+text(mct[rev(modLabels)]+labelShift,y=x,mct[rev(modLabels)],cex=0.8) 
 ```
 
              
@@ -386,8 +407,8 @@ names(datGS.Traits)=paste("cor",names(datGS.Traits),sep=".")
 datME=moduleEigengenes(datExpr,moduleColors)$eigengenes
 datKME=signedKME(datExpr, datME, outputColumnName="MM.")
 datOutput=data.frame(ProbeID=names(datExpr),annot[probes2annot,],moduleColors,datKME,datGS.Traits)
-datOutput=datOutput[order((datOutput$MM.lightsteelblue1),decreasing=T),]
-write.table(datOutput,"AnnotatedNetworkAnalysisResults1kcontrols_06072021_lightsteelblue1.csv",row.names=F,sep=",") 
+datOutput=datOutput[order((datOutput$MM.lightgreen),decreasing=T),]
+write.table(datOutput,"AnnotatedNetworkAnalysisResults1kcontrols_06182021_lightgreen.csv",row.names=F,sep=",") 
 ```
 
 5. Now you can save files containing the gene names and uniprot ID's for each interesting module.
@@ -397,12 +418,12 @@ write.table(datOutput,"AnnotatedNetworkAnalysisResults1kcontrols_06072021_lights
 #Get the corresponding uniprot id's
 allUniprotIDs=annot$Uniprotmatch[probes2annot];
 #Get the gene names
-modGenes = names(datExpr)[moduleColors=="lightsteelblue1"]
+modGenes = names(datExpr)[moduleColors=="antiquewhite4"]
 #Get their uniprot ID's
-modUniprotIDs=allUniprotIDs[moduleColors=="lightsteelblue1"];
+modUniprotIDs=allUniprotIDs[moduleColors=="antiquewhite4"];
 #Write to a new file and save
 fileName = data.frame(modGenes, modUniprotIDs)
-write.table(fileName, "lightsteelblue1_Module_genes_uniprot.csv", row.names=F, sep=",")
+write.table(fileName, "Heats_thermotol_06_12_2021/antiquewhite4_Module_genes_uniprot.csv", row.names=F, sep=",")
 ```
 
 

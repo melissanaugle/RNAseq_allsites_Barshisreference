@@ -1,0 +1,128 @@
+---
+title: "GO_MWU_MN_pipeline"
+author: "Melissa Naugle"
+date: "11/20/2020"
+output: html_document
+---
+
+
+```{r setup}
+setwd("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/Heats_thermotol_vatialowpoll_06_18_2021/GO_MWU/")
+rm( list = ls())
+graphics.off()
+library(ggplot2)
+library(ggpubr)
+library(plyr)
+library(dplyr)
+library(reshape2)
+library(ape)
+library(data.table)
+```
+
+##To get started
+#From https://github.com/z0on/GO_MWU/blob/master/README_GO_MWU.txt
+
+1. Put all this into the same directory:
+	- scripts: GO_MWU.R, gomwu_a.pl, gomwu_b.pl, gomwu.functions.R
+	#downloaded from: https://github.com/z0on/GO_MWU
+	
+	- GO hierarchy file 
+		(version 1.0, http://www.geneontology.org/GO.downloads.ontology.shtml)
+		#downloaded from above website (go.obo)
+		
+	- table of GO annotations for your sequences: two-column (gene id - GO terms), 
+		tab-delimited, one line per gene, multiple GO terms separated by semicolon. 
+		If you have multiple lines per gene, use nrify_GOtable.pl to merge them.
+		#created in this script
+		
+	- table of measure of interest for your sequences: two columns of comma-separated 
+		values: gene id, continuous measure of significance (such as fold-change or 
+		-log(p-value)). To perform standard GO enrichment analysis based on Fisher's 
+		exact test, use binary measure (1 or 0, i.e., either significant or not). 
+		To analyze modules derived from WGCNA, specify 0 for genes not included in the     module and the kME value (number between 0 and 1, module membership score) for     genes included in the module.
+		#use ref transcriptome and DE file 
+		#used ALL DGES, maybe just try those between certain comparisons?
+		#made in r script titled 'create_contig_signif_file_GOMWU.R' and gives file called contigs_signif_file_GOMWU.txt
+		
+
+2. Make sure you have perl and R. The R part requires package "ape", which 
+you might need to install prior to running this method.
+
+3. Open GO_MWU.R script; edit the input file names, mark and execute bits of code
+separated by blank lines one by one. Follow instructions given as comments in the script.
+
+4. Drag corner of the plot to rescale and match text and tree. After this, to
+achieve better "word map" effect, rerun gomwuPlot with modified "txtsize" parameter.
+
+5. Save the plot as pdf file.
+
+
+#Create table of GO annotations
+
+table of GO annotations for your sequences: two-column (gene id - GO terms), 
+		tab-delimited, one line per gene, multiple GO terms separated by semicolon. 
+		If you have multiple lines per gene, use nrify_GOtable.pl to merge them.
+		
+Using Barshis annotation file
+Not sure where / how this was generated?
+
+```{r g}
+annot <- read.csv("33496_MasterCombinedAnnotationTable.csv", header = T)
+head(annot)
+#sep by " // " in GO column
+
+GOtable <- annot %>%
+  select(Ourcontigname, GO)
+
+GOtable$GO <- gsub(" // ", ";", GOtable$GO)
+head(GOtable)
+
+GOtable$GO <- gsub("No_GOcodes", "unknown", GOtable$GO)
+GOtable$GO <- gsub("No_GO", "unknown", GOtable$GO)
+head(GOtable)
+
+write.table(GOtable, file = "GO_annot_table", sep = "\t", row.names = F, quote = F)
+```
+
+
+#To make signif file with just kME values from WGCNA
+
+```{r makesigniffile}
+
+#read in file with DGE contigs of interest 
+DGE <- read.csv("../AnnotatedNetworkAnalysisResults1kcontrols_06182021_lightgreen.csv", header = T)
+head(DGE)
+
+lightgreen <- DGE[DGE$moduleColors == "lightgreen",]
+lightgreen <- lightgreen[,c(2,49)]
+row.names(lightgreen) <- NULL
+
+#read in file with all contigs from WGCNA file
+allcontigs <- as.data.frame(DGE[,1]) #11331 contigs in all modules 
+names(allcontigs) <- "Ourcontigname"
+#could also try this with all possible contigs?
+
+head(lightgreen)
+head(allcontigs)
+
+contigs_and_signif <- merge(lightgreen, allcontigs, all = T)
+head(contigs_and_signif)
+#12253
+
+contigs_and_signif[!is.na(contigs_and_signif$MM.lightgreen),]
+#201 rows, checks out 
+
+contigs_and_signif[is.na(contigs_and_signif$MM.lightgreen),2] <- 0
+head(contigs_and_signif)
+contigs_and_signif[contigs_and_signif$MM.lightgreen > 0,]
+#201 rows, checks out 
+
+write.csv(contigs_and_signif, "contigs_signif_file_GOMWU_lightgreenmodule_WGNCA_heatsonly.csv", row.names = F, quote = F)
+```
+
+
+
+
+
+
+

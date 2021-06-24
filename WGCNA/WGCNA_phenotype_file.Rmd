@@ -7,36 +7,52 @@ output: html_document
 
 
 ```{r}
-setwd("~/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/")
-avgred <- read.csv("../../CBASS_bleachingdata/clean data/avgred_data_normalized_recovery.csv")
-phenotype_heats <- read.csv("Heats_only_5202021/phenotypedata_justheats_05212021.csv")
 
+library(tidyverse)
+library(mosaic)
+setwd("~/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/")
+phenotype_controls <- read.csv("Heats_tom_models_06_23_2021/phenotypedata_heats_thermotol_06232021.csv")
+
+bleaching_data <- read.csv("Phenotype_data/UniqueColony_SCLERAModeling_2019.csv")
 ```
 
 ```{r}
 
-avgred <- mutate(avgred, Site = derivedFactor(
-  "Ftele" = (grepl("Faga'tele", avgred$Site)),
-  "Falu" = (grepl("Faga'alu", avgred$Site)),
-  "Vat" = (grepl("Vatia", avgred$Site)),
-  "Can" = (grepl("Cannery", avgred$Site)),
-  "CoPt" = (grepl("Coconut Point", avgred$Site)),
-  method ="first",
-  .default = NA
-))
+bleaching_data <- mutate(bleaching_data, Site = derivedFactor(  
+  "Ftele" = (grepl("Faga'tele", bleaching_data$Site)),
+  "Falu" = (grepl("Faga'alu", bleaching_data$Site)),
+  "Vat" = (grepl("Vatia", bleaching_data$Site)),
+  "Can" = (grepl("Cannery", bleaching_data$Site)),
+  "CoPt" = (grepl("Coconut Point", bleaching_data$Site)),method ="first",.default = NA))
+
+head(bleaching_data)
+head(phenotype_controls)
+
+#E if controls, H if heats
+bleaching_data$Sample <- paste0(bleaching_data$Site,"_H_rep",bleaching_data$Colony)
+```
 
 
-avgred$Sample <- paste0(avgred$Site,"_H_rep",avgred$Colony)
+```{r }
 
-avgred_avgs <- avgred %>%
-  filter(!is.na(t35_normalizedto28)) %>%
-  group_by(Sample) %>%
-  summarise(mean_t35normto28 = mean(t35_normalizedto28), mean_35 = mean(X35), DIN = mean(DIN), pop2016 = mean(pop2016))
+new_phenotype_controls <- merge(phenotype_controls, bleaching_data, by = "Sample")
+#change based on columns desired
+new_phenotype_controls <- new_phenotype_controls[,c(1,2,3,4,5,6,14,15,25,26,27)]
+
+new_phenotype_controls <- merge(new_phenotype_controls, phenotype_controls, all = T)
+
+new_phenotype_controls <- new_phenotype_controls[,c(1:11)]
+
+#reorder to match for WCGNA
+#samples <- (c("CoPt_E_rep1",  "CoPt_E_rep2" , "CoPt_E_rep3",  "CoPt_E_rep4",  "Falu_E_rep1" , "Falu_E_rep3", "Falu_E_rep4" , "Falu_E_rep6"  ,"Ftele_E_rep3" ,"Ftele_E_rep5" ,"Ftele_E_rep6", "Can_E_rep2" , "Can_E_rep3"  , "Can_E_rep4"  , "Can_E_rep6"   ,"Vat_E_rep1"  , "Vat_E_rep3"  , "Vat_E_rep4",  "Vat_E_rep6"))
+samples <- c("CoPt_H_rep1"  ,"CoPt_H_rep2"  ,"CoPt_H_rep3",  "CoPt_H_rep4"  ,"Falu_H_rep1",  "Falu_H_rep4" ,"Falu_H_rep6",  "Ftele_H_rep1" ,"Ftele_H_rep3", "Ftele_H_rep5", "Ftele_H_rep6", "Can_H_rep2"  ,"Can_H_rep3"  , "Can_H_rep5"   ,"Can_H_rep6" ,  "Vat_H_rep1"   ,"Vat_H_rep3" ,  "Vat_H_rep4"  ,"Vat_H_rep6")  
+phenotypeDF <- data.frame(Sample=samples,weight=1:length(samples))
+merged <- merge(new_phenotype_controls,phenotypeDF,by.y='Sample')
+res <- merged[order(merged$weight),]
+new_phenotype_controls_res <- res[,c(1:11)]
 
 
-new_phenotype_heats <- merge(phenotype_heats, avgred_avgs, all = T)
-
-write.csv(new_phenotype_heats, "Heats_only_5202021/phenotypedata_justheats_05212021.csv")
+write.csv(new_phenotype_controls_res, "Heats_tom_models_06_23_2021/phenotypedata_heats_thermotol_tommodel_06232021.csv", row.names = F)
 
 ```
 

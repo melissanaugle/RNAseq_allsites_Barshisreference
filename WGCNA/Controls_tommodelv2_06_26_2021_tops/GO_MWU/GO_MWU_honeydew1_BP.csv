@@ -1,0 +1,50 @@
+,pval,direction,color
+3/6 negative regulation of proteasomal protein catabolic process,1.00E-15,0,black
+6/34 regulation of ubiquitin-dependent protein catabolic process,1.00E-15,0,black
+8/63 regulation of protein catabolic process,1.00E-15,0,black
+6/42 regulation of cellular protein catabolic process,1.00E-15,0,black
+4/9 negative regulation of protein catabolic process,1.00E-15,0,black
+5/48 establishment of protein localization to membrane,1.00E-15,0,black
+3/8 tail-anchored membrane protein insertion into ER membrane,1.00E-15,0,black
+3/9 intrinsic apoptotic signaling pathway in response to endoplasmic reticulum stress,1.00E-15,0,black
+3/8 intrinsic apoptotic signaling pathway by p53 class mediator,1.00E-15,0,black
+6/36 negative regulation of neuron differentiation,1.00E-15,0,black
+4/14 negative regulation of catabolic process,0.003846154,0,black
+3/10 chromosome organization involved in meiotic cell cycle,0.004166667,0,black
+"5/18 regulation of alternative mRNA splicing, via spliceosome",0.004545455,0,black
+3/11 negative regulation of proteolysis,0.006666667,0,black
+3/11 intrinsic apoptotic signaling pathway in response to DNA damage,0.006666667,0,black
+4/18 negative regulation of neuron projection development,0.007142857,0,black
+3/15 lung development,0.0075,0,black
+3/15 intrinsic apoptotic signaling pathway,0.0075,0,black
+3/12 protein insertion into membrane,0.008333333,0,black
+9/104 regulation of catabolic process,0.008823529,0,black
+6/73 protein localization to membrane,0.009090909,0,black
+4/38 meiotic cell cycle process,0.009375,0,black
+3/25 signal transduction by p53 class mediator,0.026086957,0,black
+3/9 negative regulation of dendritic spine morphogenesis,0.027083333,0,black
+3/8 spliceosomal complex assembly,0.03,0,black
+8/95 negative regulation of protein metabolic process,0.032692308,0,black
+6/69 negative regulation of nervous system development,0.034482759,0,black
+4/39 brain development,0.035185185,0,black
+4/34 internal peptidyl-lysine acetylation,0.035714286,0,black
+4/24 vacuole organization,0.0359375,0,black
+11/273 cell cycle process,0.036363636,0,black
+2/7 posttranslational protein targeting to endoplasmic reticulum membrane,0.036666667,0,black
+3/11 positive regulation of autophagy,0.037096774,0,black
+3/24 serine family amino acid metabolic process,0.051428571,0,black
+6/91 regulation of proteolysis,0.052941176,0,black
+5/43 dicarboxylic acid metabolic process,0.056756757,0,black
+6/88 chromosome organization,0.058333333,0,black
+12/324 reproductive process,0.058974359,0,black
+3/13 regulation of dendritic spine development,0.059210526,0,black
+2/11 regulation of adherens junction organization,0.077272727,0,black
+7/112 negative regulation of cell differentiation,0.07875,0,black
+5/95 male gamete generation,0.079069767,0,black
+2/8 glycine metabolic process,0.080952381,0,black
+5/58 regulation of cell morphogenesis involved in differentiation,0.081707317,0,black
+2/5 production of small RNA involved in gene silencing by RNA,0.084375,0,black
+4/44 response to endoplasmic reticulum stress,0.086170213,0,black
+5/44 regulation of mRNA processing,0.087777778,0,black
+3/15 negative regulation of synapse organization,0.088043478,0,black
+4/49 protein acylation,0.089795918,0,black

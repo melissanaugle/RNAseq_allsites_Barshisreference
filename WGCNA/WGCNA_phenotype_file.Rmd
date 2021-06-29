@@ -11,9 +11,9 @@ output: html_document
 library(tidyverse)
 library(mosaic)
 setwd("~/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/")
-phenotype_controls <- read.csv("Heats_tom_models_06_23_2021/phenotypedata_heats_thermotol_06232021.csv")
+phenotype_controls <- read.csv("Heats_tommodelv2_vatialow_06_26_2021/phenotypedata_heats_tommodelv2_vatlow_06262021.csv")
 
-bleaching_data <- read.csv("Phenotype_data/UniqueColony_SCLERAModeling_2019.csv")
+bleaching_data <- read.csv("Phenotype_data/UniqueColony_SCLERAModeling_2019_v1.5.csv")
 ```
 
 ```{r}
@@ -37,11 +37,12 @@ bleaching_data$Sample <- paste0(bleaching_data$Site,"_H_rep",bleaching_data$Colo
 
 new_phenotype_controls <- merge(phenotype_controls, bleaching_data, by = "Sample")
 #change based on columns desired
-new_phenotype_controls <- new_phenotype_controls[,c(1,2,3,4,5,6,14,15,25,26,27)]
+new_phenotype_controls <- new_phenotype_controls[,c(1,2,3,4,5,6,21,22,23,24)]
 
 new_phenotype_controls <- merge(new_phenotype_controls, phenotype_controls, all = T)
 
-new_phenotype_controls <- new_phenotype_controls[,c(1:11)]
+new_phenotype_controls <- new_phenotype_controls[,c(1:10)]
+new_phenotype_controls
 
 #reorder to match for WCGNA
 #samples <- (c("CoPt_E_rep1",  "CoPt_E_rep2" , "CoPt_E_rep3",  "CoPt_E_rep4",  "Falu_E_rep1" , "Falu_E_rep3", "Falu_E_rep4" , "Falu_E_rep6"  ,"Ftele_E_rep3" ,"Ftele_E_rep5" ,"Ftele_E_rep6", "Can_E_rep2" , "Can_E_rep3"  , "Can_E_rep4"  , "Can_E_rep6"   ,"Vat_E_rep1"  , "Vat_E_rep3"  , "Vat_E_rep4",  "Vat_E_rep6"))
@@ -49,17 +50,13 @@ samples <- c("CoPt_H_rep1"  ,"CoPt_H_rep2"  ,"CoPt_H_rep3",  "CoPt_H_rep4"  ,"Fa
 phenotypeDF <- data.frame(Sample=samples,weight=1:length(samples))
 merged <- merge(new_phenotype_controls,phenotypeDF,by.y='Sample')
 res <- merged[order(merged$weight),]
-new_phenotype_controls_res <- res[,c(1:11)]
+new_phenotype_controls_res <- res[,c(1:10)]
+new_phenotype_controls_res
 
-
-write.csv(new_phenotype_controls_res, "Heats_tom_models_06_23_2021/phenotypedata_heats_thermotol_tommodel_06232021.csv", row.names = F)
-
-```
-
-
-```{r}
+#write.csv(new_phenotype_controls_res, "Heats_tommodelv2_vatialow_06_26_2021/phenotypedata_heats_tommodelv2_vatlow_06262021.csv", row.names = F)
 
 ```
+
 
 
 

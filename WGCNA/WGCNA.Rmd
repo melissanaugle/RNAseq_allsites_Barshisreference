@@ -50,8 +50,8 @@ Normalization deets: trimmed mean m values to eliminate composition biases
 This type of filtering and normalization means that the normalized counts are diff for the heats only v controls only v all samples. Is this okay? I suspect it is but they say defs DO NOT filter by DGE 
 
 ```{r}
-# This creates an object called "datExpr" that contains the normalized counts file output from DESeq2
-datExpr = read.csv("../GLM_edgeR_outputs/heats_only/glmQLF_normalizedCounts_heatsonly.csv")
+# This creates an object called "datExpr" that contains the normalized counts file output from EdgeR
+datExpr = read.csv("../GLM_edgeR_outputs/controls/glmQLF_normalizedCounts_controls.csv")
 # "head" the file to preview it
 head(datExpr) # You see that genes are listed in a column named "X" and samples are in columns
 ```
@@ -94,7 +94,7 @@ if (!gsg$allOK)
 
 Create an object called "datTraits" that contains your trait data
 ```{r}
-datTraits = read.csv("Heats_tom_models_06_23_2021/phenotypedata_heats_thermotol_tommodel_06232021.csv")
+datTraits = read.csv("Controls_tommodelv2_06_26_2021_tops/phenotypedata_controls_tommodels_06_23_21_tops.csv")
 head(datTraits)
 nrow(datTraits)
 #Then form a data frame analogous to expression data that will hold the clinical traits.
@@ -280,22 +280,40 @@ For further analysis, if you wanted to pull out genes belonging to a certain mod
 And run the following chunk to compare GOterms in the module to GO terms of a type A stress response in Dixon et al 2020:
 
 Don't run this everytime! 
+#could add other gene lists here
+
 ```{r}
-module_names <- names(datExpr)[moduleColors=="lightsteelblue1"]
+modulecolor = "antiquewhite1"
+
+module_names <- names(datExpr)[moduleColors==modulecolor]
 module_names <- as.data.frame(module_names)
 annot <- read.csv("../data/33496_MasterCombinedAnnotationTable.csv")
-blue_annot <- annot[annot$Ourcontigname%in%module_names$module_names,]
-typeAGO <- read.csv("../../../../Desktop/typeA_Dixon_metaanalysis_mec15535-sup-0002-tables1-s10 copy.csv")
+module_annot <- annot[annot$Ourcontigname%in%module_names$module_names,]
+#load dixon genes and check for matches
+typeAGO <- read.csv("../../../../Desktop/CSUMB/Thesis/Gene_lists_etc/typeA_Dixon_metaanalysis_mec15535-sup-0002-tables1-s10 copy.csv")
 head(typeAGO)
-blue_annot %>% 
+module_annot %>% 
     mutate(GO=strsplit(GO, " // ")) %>% 
     unnest(GO)
 
-GOs_inblue <- blue_annot[blue_annot$GO%in%typeAGO$term,]
+GOs_inmodule_dixon <- module_annot[module_annot$GO%in%typeAGO$term,]
 #check for dups 
-duplicated(GOs_inblue$Ourcontigname)
-write_csv(GOs_inblue, "GOs_typeA_dixon_lightsteelblue1.csv")
+duplicated(GOs_inmodule_dixon$Ourcontigname)
+#GOs_inmodule_dixon$GeneMatch <- "Dixon et al 2020, general stress response"
+#write_csv(GOs_inmodule_dixon, "GOs_typeA_dixon_lightsteelblue1.csv") #change to module color
 
+#check for matches with barshis 2013
+barshis_heat_v_control <- read.csv("../../../CSUMB/Thesis/Gene_lists_etc/DEGS_control_v_hot_barshi2013.csv")
+con_inmodule_barshis <- module_annot[module_annot$Ourcontigname%in%barshis_heat_v_control$ContigName,]
+#check for dups 
+duplicated(GOs_inmodule_barshis$Ourcontigname)
+#GOs_inmodule_barshis$GeneMatch <- "Barshis et al 2013, heats v control"
+
+#put them together 
+all_shared <- merge(GOs_inmodule_dixon, GOs_inmodule_barshis, all = T) 
+duplicated(all_shared$Ourcontigname)
+
+write_csv(all_shared, paste0("GOs_dixon_barshis_other_",modulecolor,".csv")) 
 
 ```
 
@@ -319,7 +337,7 @@ par(mar = c(6, 8.5, 3, 3));
 
 ```{r}
 # Display the correlation values within a heatmap plot
-pdf(file="Trait_heatmap_controls_phenotype_rank_06232021.pdf", height=9, width=8)
+pdf(file="Trait_heatmap_controls_phenotype_06262021.pdf", height=9, width=8)
 labeledHeatmap(Matrix = moduleTraitCor,
 xLabels = names(datTraits),
 ySymbols = modLabels,
@@ -331,7 +349,7 @@ setStdMargins = TRUE,
 cex.text = 0.8,
 cex.lab.x = 0.8,
 zlim = c(-.8,.8),
-main = paste("Module-Trait Correlations of Heat Treatments \n for All Pollution Levels"))
+main = paste("Module-Trait Correlations of Control Treatments"))
 dev.off()
 ```
 
@@ -355,10 +373,10 @@ Need to change trait name in 3 spots below
 
 ```{r}
 # Define variable weight containing the weight column of datTrait - leave weight as variable, but change names in first 2 commands
-trait = "heat_stress"
+trait = "Top10.Phenotype.X0"
 
-weight = as.data.frame(datTraits$heat_stress); #change to your trait name of interest
-names(weight) = "heat_stress"
+weight = as.data.frame(datTraits$Top10.Phenotype.X0); #change to your trait name of interest
+names(weight) = "Top10.Phenotype.X0"
 # names (colors) of the modules
 modNames = substring(names(MEs), 3)
 geneModuleMembership = as.data.frame(cor(datExpr, MEs, use = "p"));
@@ -376,7 +394,7 @@ Then plot the correlations for visual comparison
 ```{r}
 #Gene-trait significance correlation plots
 #windows()
-moduleCols=c( "blue") 
+moduleCols=c( "honeydew1") 
 par(mfrow=c(1,4))
 for (module in moduleCols) {
 column = match(module, modNames);
@@ -388,7 +406,7 @@ verboseScatterplot(abs(geneModuleMembership[moduleGenes, column]),
                  xlab = paste("ModMem in", module, "module"),
                  ylab = paste0("Gene Sig for ", trait),
                  main = paste("MM vs. GS\n"),
-                 cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2, col = module)
+                 cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2, col = "black")
    }     
 ```
 
@@ -407,8 +425,8 @@ names(datGS.Traits)=paste("cor",names(datGS.Traits),sep=".")
 datME=moduleEigengenes(datExpr,moduleColors)$eigengenes
 datKME=signedKME(datExpr, datME, outputColumnName="MM.")
 datOutput=data.frame(ProbeID=names(datExpr),annot[probes2annot,],moduleColors,datKME,datGS.Traits)
-datOutput=datOutput[order((datOutput$MM.lightgreen),decreasing=T),]
-write.table(datOutput,"AnnotatedNetworkAnalysisResults1kcontrols_06182021_lightgreen.csv",row.names=F,sep=",") 
+datOutput=datOutput[order((datOutput$evalue),decreasing=T),]
+write.table(datOutput,"AnnotatedNetworkAnalysisResults1kcontrols_06232021.csv",row.names=F,sep=",") 
 ```
 
 5. Now you can save files containing the gene names and uniprot ID's for each interesting module.
@@ -418,12 +436,12 @@ write.table(datOutput,"AnnotatedNetworkAnalysisResults1kcontrols_06182021_lightg
 #Get the corresponding uniprot id's
 allUniprotIDs=annot$Uniprotmatch[probes2annot];
 #Get the gene names
-modGenes = names(datExpr)[moduleColors=="antiquewhite4"]
+modGenes = names(datExpr)[moduleColors=="orange"]
 #Get their uniprot ID's
-modUniprotIDs=allUniprotIDs[moduleColors=="antiquewhite4"];
+modUniprotIDs=allUniprotIDs[moduleColors=="orange"];
 #Write to a new file and save
 fileName = data.frame(modGenes, modUniprotIDs)
-write.table(fileName, "Heats_thermotol_06_12_2021/antiquewhite4_Module_genes_uniprot.csv", row.names=F, sep=",")
+write.table(fileName, "Controls_tommodelv2_06_26_2021_tops/orange_Module_genes_uniprot.csv", row.names=F, sep=",")
 ```
 
 

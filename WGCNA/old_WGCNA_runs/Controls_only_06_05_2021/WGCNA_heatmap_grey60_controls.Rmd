@@ -1,0 +1,192 @@
+---
+title: "WGCNA_heatmap_grey60"
+author: "Melissa Naugle"
+date: "6/8/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse) 
+library(reshape2)  
+library(ggplot2)   
+library(ggdendro)
+library(gplots)
+library(RColorBrewer)
+library(data.table)
+library(tm)
+library(SnowballC)
+library(wordcloud)
+library(wordcloud2)
+library(XML)
+library(RCurl)
+library(RColorBrewer)
+setwd("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/Controlsonly_06_05_2021/") 
+```
+
+
+#2. Read in data, check for duplicates, cluster, and reshape 
+
+To change between 
+
+```{r data}
+#grey60 contigs file
+grey60contigs <- read.csv("grey60_Module_genes_uniprot.csv")
+annot <- read.csv("../../data/33496_MasterCombinedAnnotationTable.csv")
+nrow(grey60contigs)
+nrow(annot)
+grey60_annot <- annot[(annot$Ourcontigname %in% grey60contigs$modGenes),]
+nrow(grey60_annot)
+#grey60_annot_table <- grey60_annot[,c(1,5,13,18,19,20)]
+#write.csv(grey60_annot_table, "grey60_annot_table.csv", row.names = F)
+
+#can use this annot file for table /word cloud 
+
+#select contigs from matrix dat file 
+
+# load data
+data <- read.table("../../data/Controls_only/diffExpr.P0.05_C2.matrix.log2.centered.dat", header=TRUE, sep = "\t") #this time try with RSEM counts prior to DGE 
+#select only control columns 
+#only if using RSEM file 
+#controlcols <- c(1,2,3,4,9,10,11,12,16,17,18,23,24,25,26,31,32,33,34)
+#data <- data[,controlcols]
+
+#select grey60 contigs
+grey60_dat <- data[(rownames(data) %in% grey60_annot$Ourcontigname),]
+nrow(grey60_dat)
+
+#find genes for those 15 that were DE p0.05 and in grey60 
+#grey60_DE0.05_annot <- grey60_annot[(grey60_annot$Ourcontigname %in% rownames(grey60_dat)),]
+#grey60_DE0.05_annot_table <- grey60_DE0.05_annot[,c(1,5,13,18,19,20)]
+#write.csv(grey60_DE0.05_annot_table, "grey60_DE0.05edgeR_annot_table.csv", row.names = F)
+
+#Check for row duplicates
+#data[duplicated(data) | duplicated(data, fromLast=TRUE), ]
+
+data <- grey60_dat
+
+#Re-organize data 
+#cluster rows
+row.order <- hclust(dist(data))$order 
+#cluster columns by sample order 
+names(data)
+col.order <-c(1,2,3,4, #coco E
+              12,13,14,15, #can E
+              5,6,7,8, #alu
+              16,17,18,19, #vat H
+              9,10,11) #tele
+#re-order matrix according to clustering
+dat_clust <- data[row.order, col.order] # re-order matrix according to clustering
+#reshape into data frame
+df_molten_dat <- melt(as.matrix(dat_clust)) 
+names(df_molten_dat)[c(1:2)] <- c("Trinity_ID", "treatment")
+df_molten_dat
+```
+
+#3. Make heatmap
+
+```{r heatmap}
+#Find min and max of value column in data frame to determine range of heatmap
+
+max <- max(df_molten_dat$value)
+min <- min(df_molten_dat$value)
+mean <- mean(df_molten_dat$value)
+IQR(df_molten_dat$value)
+
+
+
+#plot heatmap
+g <- ggplot(df_molten_dat, aes(x=treatment,y=Trinity_ID)) +
+  geom_tile(aes(fill = value)) +
+  scale_fill_gradient2(
+  #set colors
+  low="blue", mid="black", high="orange", 
+  #set midpoint, max, min, can change these to change the color scale
+  midpoint=mean, limits=c(min,max)) + 
+  ylab("Genes") +
+  xlab("") +
+  ggtitle("") +
+  theme(legend.title = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(size=10),
+        axis.title = element_text(size=14,face="bold"),
+        #change x text size
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        #make y text tiny. Can make bigger if you want to read contig names
+        axis.text.y = element_text(angle = 20, size = 0))+
+  labs(fill = "Log Fold Change")
+
+g
+
+#how can we label the y with the annotations 
+
+ggsave("heatmap_p0.05_controls_WGCNA_grey60module_RSEMcountsfile_190genes.png",plot=g)
+```
+
+Word cloud 
+
+```{r}
+
+#word cloud 
+text <- grey60_annot$Keywords
+text <- gsub(";", " ", text)
+text <- gsub("reference", " ", text)
+text <- gsub("Reference", " ", text)
+text <- gsub("Complete", " ", text)
+text <- gsub("no_keywords", " ", text)
+text <- gsub("keyword", " ", text)
+text <- gsub("uncharacterized", " ", text)
+text <- gsub(" protein", " ", text)
+text <- gsub("no_description", " ", text)
+text <- gsub("proteome", " ", text)
+text <- gsub("No_", " ", text)
+text <- gsub("Cell ", " ", text)
+text <- gsub("alternative", " ", text)
+docs <- Corpus(VectorSource(text))
+docs <- docs %>%
+  tm_map(stripWhitespace) 
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("english"))
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(words),freq=words)
+set.seed(1234) # for reproducibility 
+dev.new(width = 10000, height = 10000, unit = "px")
+wordcloud(words = df$word, freq = df$freq, min.freq = 2, scale = c(2, 0.5), max.words=180, random.order=FALSE, rot.per=0.15, colors=brewer.pal(9, "Dark2"))
+
+
+
+
+```
+
+Relate these genes to CSR genes from Dixon paper 
+
+
+```{r}
+grey60_annot_GO_table <- grey60_annot[,c(1,16)]
+GOs <- strsplit(grey60_annot_GO_table$GO, " // ")
+
+row.names(GOs)
+
+csr_gos <- read.csv("typeA_CSR_Dixon_metaanalysis_mec15535-sup-0002-tables1-s10.csv", skip = 8, header = T)
+head(csr_gos)
+
+grey60_dat <- grey60[(grey60$GO %in% csr_gos$term),]
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

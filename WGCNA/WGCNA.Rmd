@@ -51,7 +51,7 @@ This type of filtering and normalization means that the normalized counts are di
 
 ```{r}
 # This creates an object called "datExpr" that contains the normalized counts file output from EdgeR
-datExpr = read.csv("../GLM_edgeR_outputs/controls/glmQLF_normalizedCounts_controls.csv")
+datExpr = read.csv("../GLM_edgeR_outputs/heats_only/glmQLF_normalizedCounts_heatsonly.csv")
 # "head" the file to preview it
 head(datExpr) # You see that genes are listed in a column named "X" and samples are in columns
 ```
@@ -94,7 +94,7 @@ if (!gsg$allOK)
 
 Create an object called "datTraits" that contains your trait data
 ```{r}
-datTraits = read.csv("Controls_tommodelv2_06_26_2021_tops/phenotypedata_controls_tommodels_06_23_21_tops.csv")
+datTraits = read.csv("Heats_tommodelv3_06_29_2021_thesis/phenotypedata_heats_tommodelv2_062921_thesis.csv")
 head(datTraits)
 nrow(datTraits)
 #Then form a data frame analogous to expression data that will hold the clinical traits.
@@ -337,7 +337,7 @@ par(mar = c(6, 8.5, 3, 3));
 
 ```{r}
 # Display the correlation values within a heatmap plot
-pdf(file="Trait_heatmap_controls_phenotype_06262021.pdf", height=9, width=8)
+pdf(file="Trait_heatmap_heats_phenotype_06292021.pdf", height=9, width=8)
 labeledHeatmap(Matrix = moduleTraitCor,
 xLabels = names(datTraits),
 ySymbols = modLabels,
@@ -349,7 +349,7 @@ setStdMargins = TRUE,
 cex.text = 0.8,
 cex.lab.x = 0.8,
 zlim = c(-.8,.8),
-main = paste("Module-Trait Correlations of Control Treatments"))
+main = paste("Module-Trait Correlations of Heat Stress Treatments"))
 dev.off()
 ```
 
@@ -426,7 +426,7 @@ datME=moduleEigengenes(datExpr,moduleColors)$eigengenes
 datKME=signedKME(datExpr, datME, outputColumnName="MM.")
 datOutput=data.frame(ProbeID=names(datExpr),annot[probes2annot,],moduleColors,datKME,datGS.Traits)
 datOutput=datOutput[order((datOutput$evalue),decreasing=T),]
-write.table(datOutput,"AnnotatedNetworkAnalysisResults1kcontrols_06232021.csv",row.names=F,sep=",") 
+write.table(datOutput,"AnnotatedNetworkAnalysisResults1kheats_06292021.csv",row.names=F,sep=",") 
 ```
 
 5. Now you can save files containing the gene names and uniprot ID's for each interesting module.
@@ -436,12 +436,12 @@ write.table(datOutput,"AnnotatedNetworkAnalysisResults1kcontrols_06232021.csv",r
 #Get the corresponding uniprot id's
 allUniprotIDs=annot$Uniprotmatch[probes2annot];
 #Get the gene names
-modGenes = names(datExpr)[moduleColors=="orange"]
+modGenes = names(datExpr)[moduleColors=="saddlebrown"]
 #Get their uniprot ID's
-modUniprotIDs=allUniprotIDs[moduleColors=="orange"];
+modUniprotIDs=allUniprotIDs[moduleColors=="saddlebrown"];
 #Write to a new file and save
 fileName = data.frame(modGenes, modUniprotIDs)
-write.table(fileName, "Controls_tommodelv2_06_26_2021_tops/orange_Module_genes_uniprot.csv", row.names=F, sep=",")
+write.table(fileName, "Heats_tommodelv3_06_29_2021_thesis/saddlebrown_Module_genes_uniprot.csv", row.names=F, sep=",")
 ```
 
 

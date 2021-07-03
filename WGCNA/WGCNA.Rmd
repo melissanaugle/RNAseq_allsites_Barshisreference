@@ -51,7 +51,7 @@ This type of filtering and normalization means that the normalized counts are di
 
 ```{r}
 # This creates an object called "datExpr" that contains the normalized counts file output from EdgeR
-datExpr = read.csv("../GLM_edgeR_outputs/heats_only/glmQLF_normalizedCounts_heatsonly.csv")
+datExpr = read.csv("../GLM_edgeR_outputs/controls/glmQLF_normalizedCounts_controls.csv")
 # "head" the file to preview it
 head(datExpr) # You see that genes are listed in a column named "X" and samples are in columns
 ```
@@ -94,7 +94,7 @@ if (!gsg$allOK)
 
 Create an object called "datTraits" that contains your trait data
 ```{r}
-datTraits = read.csv("Heats_tommodelv3_06_29_2021_thesis/phenotypedata_heats_tommodelv2_062921_thesis.csv")
+datTraits = read.csv("Controls_tommodelv3_07_02_2021_posterICRS/phenotypedata_controls_tommodels_07_02_21_ICRS.csv")
 head(datTraits)
 nrow(datTraits)
 #Then form a data frame analogous to expression data that will hold the clinical traits.
@@ -208,7 +208,7 @@ And finally, this plots the dendogram with the module colors below it.
 ```{r}
 #plot dendrogram with module colors below it
 #INCLUE THE NEXT LINE TO SAVE TO FILE
-pdf(file="cluster_heatssamples_vatlow.pdf")
+pdf(file="cluster_controlssamples_icrs.pdf")
 plotDendroAndColors(geneTree, cbind(dynamicColors, mergedColors), c("Dynamic Tree Cut", "Merged dynamic"), dendroLabels= FALSE, hang=0.03, addGuide= TRUE, guideHang=0.05)
 moduleColors = mergedColors
 colorOrder = c("grey", standardColors(50))
@@ -337,7 +337,7 @@ par(mar = c(6, 8.5, 3, 3));
 
 ```{r}
 # Display the correlation values within a heatmap plot
-pdf(file="Trait_heatmap_heats_phenotype_06292021.pdf", height=9, width=8)
+pdf(file="Trait_heatmap_controls_phenotype_07022021_icrs.pdf", height=9, width=8)
 labeledHeatmap(Matrix = moduleTraitCor,
 xLabels = names(datTraits),
 ySymbols = modLabels,
@@ -349,7 +349,7 @@ setStdMargins = TRUE,
 cex.text = 0.8,
 cex.lab.x = 0.8,
 zlim = c(-.8,.8),
-main = paste("Module-Trait Correlations of Heat Stress Treatments"))
+main = paste("Module-Trait Correlations of Control Treatments"))
 dev.off()
 ```
 

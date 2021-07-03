@@ -1,0 +1,124 @@
+---
+title: "GO_MWU_MN_pipeline"
+author: "Melissa Naugle"
+date: "11/20/2020"
+output: html_document
+---
+
+
+```{r setup}
+setwd("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/GO_MWU/")
+rm( list = ls())
+graphics.off()
+library(ggplot2)
+library(ggpubr)
+library(plyr)
+library(dplyr)
+library(reshape2)
+library(ape)
+library(data.table)
+```
+
+##To get started
+#From https://github.com/z0on/GO_MWU/blob/master/README_GO_MWU.txt
+
+1. Put all this into the same directory:
+	- scripts: GO_MWU.R, gomwu_a.pl, gomwu_b.pl, gomwu.functions.R
+	#downloaded from: https://github.com/z0on/GO_MWU
+	
+	- GO hierarchy file 
+		(version 1.0, http://www.geneontology.org/GO.downloads.ontology.shtml)
+		#downloaded from above website (go.obo)
+		
+	- table of GO annotations for your sequences: two-column (gene id - GO terms), 
+		tab-delimited, one line per gene, multiple GO terms separated by semicolon. 
+		If you have multiple lines per gene, use nrify_GOtable.pl to merge them.
+		#created in this script
+		
+	- table of measure of interest for your sequences: two columns of comma-separated 
+		values: gene id, continuous measure of significance (such as fold-change or 
+		-log(p-value)). To perform standard GO enrichment analysis based on Fisher's 
+		exact test, use binary measure (1 or 0, i.e., either significant or not).
+		#use ref transcriptome and DE file 
+		#used ALL DGES, maybe just try those between certain comparisons?
+		#made in r script titled 'create_contig_signif_file_GOMWU.R' and gives file called contigs_signif_file_GOMWU.txt
+		
+
+2. Make sure you have perl and R. The R part requires package "ape", which 
+you might need to install prior to running this method.
+
+3. Open GO_MWU.R script; edit the input file names, mark and execute bits of code
+separated by blank lines one by one. Follow instructions given as comments in the script.
+
+4. Drag corner of the plot to rescale and match text and tree. After this, to
+achieve better "word map" effect, rerun gomwuPlot with modified "txtsize" parameter.
+
+5. Save the plot as pdf file.
+
+
+#Create table of GO annotations
+
+table of GO annotations for your sequences: two-column (gene id - GO terms), 
+		tab-delimited, one line per gene, multiple GO terms separated by semicolon. 
+		If you have multiple lines per gene, use nrify_GOtable.pl to merge them.
+		
+Using Barshis annotation file
+Not sure where / how this was generated?
+
+```{r g}
+annot <- read.csv("33496_MasterCombinedAnnotationTable.csv", header = T)
+head(annot)
+#sep by " // " in GO column
+
+GOtable <- annot %>%
+  select(ContigName, GO)
+
+GOtable$GO <- gsub(" // ", ";", GOtable$GO)
+head(GOtable)
+
+GOtable$GO <- gsub("No_GOcodes", "unknown", GOtable$GO)
+GOtable$GO <- gsub("No_GO", "unknown", GOtable$GO)
+head(GOtable)
+
+write_delim(GOtable, path = "GO_annot_table", delim = "\t", col_names = F)
+```
+
+
+#To make signif file with just 1s and 0s 
+
+```{r makesigniffile}
+
+#read in file with DGE contigs of interest 
+DGE <- read.csv("../data/DE_comparison_lists/DE_control_highvlowpollution_05_14_21.csv", header = T)
+head(DGE)
+
+#read in file with all contigs from transciptome
+allcontigs <- read.delim("../data/EdgeR_P0.05/diffExpr.P0.05_C2.matrix", header = T)
+allcontigs <- setDT(allcontigs, keep.rownames = TRUE)[,1]
+head(allcontigs)
+allcontigs$ContigID <- allcontigs$rn
+allcontigs$rn <- NULL
+
+
+#if DGE then signif
+DGE$signif <- '1'
+
+head(DGE)
+head(allcontigs)
+
+contigs_and_signif <- merge(DGE, allcontigs, all = T)
+head(contigs_and_signif)
+#12253
+
+contigs_and_signif[is.na(contigs_and_signif)] <- 0
+
+head(contigs_and_signif)
+write.csv(contigs_and_signif, "contigs_signif_file_GOMWU_DE_control_highvlowpollution.csv", row.names = F, quote = F)
+```
+
+
+
+
+
+
+

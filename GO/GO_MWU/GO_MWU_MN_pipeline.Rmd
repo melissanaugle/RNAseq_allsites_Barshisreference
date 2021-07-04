@@ -7,7 +7,7 @@ output: html_document
 
 
 ```{r setup}
-setwd("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/GO_MWU/")
+setwd("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/GO/GO_MWU/")
 rm( list = ls())
 graphics.off()
 library(ggplot2)
@@ -83,40 +83,56 @@ head(GOtable)
 write_delim(GOtable, path = "GO_annot_table", delim = "\t", col_names = F)
 ```
 
+#To make signif file with log fc
 
-#To make signif file with just 1s and 0s 
+```{r}
 
-```{r makesigniffile}
+#read in file contigs of interest with common core genes 
+contigs_heat_control <- read.csv("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/data/DE_comparison_lists/DE_middle_of_venn_classic_FDR0.05.csv")
 
-#read in file with DGE contigs of interest 
-DGE <- read.csv("../data/DE_comparison_lists/DE_control_highvlowpollution_05_14_21.csv", header = T)
+#read in DE file 
+DGE <- read.csv("../../GLM_edgeR_outputs/data/tagsTblANOVA.one_all_heat_v_control.csv", header = T)
+DGE <- as.data.frame(DGE)
+DGE <- DGE %>%
+  select(1,2,4)
 head(DGE)
+nrow(DGE)
+
+DGE$Ourcontigname <- row.names(DGE)
+row.names(DGE) <- NULL
+
+#select contigs of interest from DGE list
+DGE_of_interest <- DGE[DGE$Ourcontigname%in%contigs_heat_control$ContigID,]
+
 
 #read in file with all contigs from transciptome
-allcontigs <- read.delim("../data/EdgeR_P0.05/diffExpr.P0.05_C2.matrix", header = T)
-allcontigs <- setDT(allcontigs, keep.rownames = TRUE)[,1]
-head(allcontigs)
-allcontigs$ContigID <- allcontigs$rn
-allcontigs$rn <- NULL
-
-
-#if DGE then signif
-DGE$signif <- '1'
-
-head(DGE)
+allcontigs <- read.csv("33496_MasterCombinedAnnotationTable.csv", header = T)
+nrow(allcontigs)
+allcontigs <- allcontigs %>%
+  select(1)
 head(allcontigs)
 
-contigs_and_signif <- merge(DGE, allcontigs, all = T)
+
+contigs_and_signif <- merge(DGE_of_interest, allcontigs, all = T)
 head(contigs_and_signif)
-#12253
+nrow(contigs_and_signif)
 
 contigs_and_signif[is.na(contigs_and_signif)] <- 0
 
-head(contigs_and_signif)
-write.csv(contigs_and_signif, "contigs_signif_file_GOMWU_DE_control_highvlowpollution.csv", row.names = F, quote = F)
+contigs_and_signif_fc <- contigs_and_signif %>%
+  select(1,2)
+
+contigs_and_signif_p <- contigs_and_signif %>%
+  select(1,4)
+
+head(contigs_and_signif_fc)
+head(contigs_and_signif_p)
+
+write.csv(contigs_and_signif_fc, "contigs_signif_file_GOMWU_all_heat_v_control_logfoldchange.csv", row.names = F, quote = F)
+
+write.csv(contigs_and_signif_p, "contigs_signif_file_GOMWU_all_heat_v_control_p.csv", row.names = F, quote = F)
+
 ```
-
-
 
 
 

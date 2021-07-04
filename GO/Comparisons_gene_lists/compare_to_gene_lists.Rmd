@@ -1,0 +1,44 @@
+---
+title: "compare_to_gene_lists"
+author: "Melissa Naugle"
+date: "7/3/2021"
+output: html_document
+---
+
+
+Run the following chunk to compare GOterms in the module to GO terms of a type A stress response in Dixon et al 2020:
+
+
+```{r}
+library(tidyverse)
+setwd("~/Desktop/GitHub/RNAseq_allsites_Barshisreference/GO/Comparisons_gene_lists/")
+gene_names <- read.csv("../../data/DE_comparison_lists/DE_middle_of_venn_classic_FDR0.05.csv")
+annot <- read.csv("../../data/33496_MasterCombinedAnnotationTable.csv")
+gene_annot <- annot[annot$Ourcontigname%in%gene_names$ContigID,]
+#load dixon genes and check for matches
+typeAGO <- read.csv("../../../../../Desktop/CSUMB/Thesis/Gene_lists_etc/typeA_Dixon_metaanalysis_mec15535-sup-0002-tables1-s10 copy.csv")
+head(typeAGO)
+gene_annot %>% 
+    mutate(GO=strsplit(GO, " // ")) %>% 
+    unnest(GO)
+
+GOs_inmodule_dixon <- gene_annot[gene_annot$GO%in%typeAGO$term,]
+#check for dups 
+duplicated(GOs_inmodule_dixon$Ourcontigname)
+#GOs_inmodule_dixon$GeneMatch <- "Dixon et al 2020, general stress response"
+#write_csv(GOs_inmodule_dixon, "GOs_typeA_dixon_lightsteelblue1.csv") #change to module color
+
+#check for matches with barshis 2013
+barshis_heat_v_control <- read.csv("../../../../CSUMB/Thesis/Gene_lists_etc/DEGS_control_v_hot_barshi2013.csv")
+con_inmodule_barshis <- gene_annot[gene_annot$Ourcontigname%in%barshis_heat_v_control$ContigName,]
+#check for dups 
+duplicated(GOs_inmodule_barshis$Ourcontigname)
+#GOs_inmodule_barshis$GeneMatch <- "Barshis et al 2013, heats v control"
+
+#put them together 
+all_shared <- merge(GOs_inmodule_dixon, GOs_inmodule_barshis, all = T) 
+duplicated(all_shared$Ourcontigname)
+
+write_csv(all_shared, paste0("GOs_dixon_barshis_other_",modulecolor,".csv")) 
+
+```

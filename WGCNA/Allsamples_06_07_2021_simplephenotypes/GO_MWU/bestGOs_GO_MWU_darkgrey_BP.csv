@@ -1,0 +1,12 @@
+"","delta.rank","pval","level","nseqs","term","name","p.adj"
+"134",0,6.37500745092735e-08,2,24,"GO:0002822;GO:0002819","regulation of adaptive immune response based on somatic recombination of immune receptors built from immunoglobulin superfamily domains",0
+"563",0,2.25497061685667e-11,3,48,"GO:0009611","response to wounding",0
+"721",0,2.47887181990389e-07,2,14,"GO:0019722","calcium-mediated signaling",0
+"773",0,1.06202264212427e-10,2,22,"GO:0030011","maintenance of cell polarity",0
+"774",0,6.75440889159222e-08,2,155,"GO:0030029;GO:0030036","actin filament-based process",0
+"791",0,9.00080087775298e-05,2,93,"GO:0030163","protein catabolic process",0.0075187969924812
+"1041",0,0.000113325812688602,2,8,"GO:0040024","dauer larval development",0.00972222222222222
+"1111",0,1.0029199852619e-06,2,17,"GO:0043112","receptor metabolic process",0
+"1188",0,4.85538910115326e-11,2,28,"GO:0045104;GO:0045103","intermediate filament cytoskeleton organization",0
+"1243",0,5.71399707663984e-08,2,265,"GO:0045892;GO:1903507;GO:2000113;GO:1902679;GO:0010558;GO:0031327;GO:0051253;GO:0009890;GO:0045934","negative regulation of biosynthetic process",0
+"1745",0,2.89698689650007e-05,5,25,"GO:1902105","regulation of leukocyte differentiation",0.00432692307692308

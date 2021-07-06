@@ -1,0 +1,18 @@
+GO term(s),Description,Adj. p value
+Cellular component organization,,
+GO:0071555;GO:0045229;GO:0071554,external encapsulating structure organization,0
+Metabolic process,,
+GO:0009164;GO:0034656;GO:1901658,nucleobase-containing small molecule catabolic process,0.01
+GO:0043094,cellular metabolic compound salvage,0.021
+GO:0009116;GO:1901657,glycosyl compound metabolic process,0.023
+Organic acid metabolic process,,
+GO:0000096,sulfur amino acid metabolic process,0
+GO:0019509;GO:0071267;GO:0043102;GO:0071265,L-methionine salvage,0
+GO:0006555;GO:0009086;GO:0000097;GO:0009067,methionine metabolic process,0.013
+GO:0046394;GO:0016053,organic acid biosynthetic process,0.017
+GO:0009066,aspartate family amino acid metabolic process,0.019
+GO:0006520,cellular amino acid metabolic process,0.025
+GO:1901607;GO:0008652,cellular amino acid biosynthetic process,0.028
+Response to chemical ,,
+GO:0009737,response to abscisic acid,0.025
+GO:0009751,response to salicylic acid,0.025

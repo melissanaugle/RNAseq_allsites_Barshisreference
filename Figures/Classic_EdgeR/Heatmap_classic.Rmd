@@ -1,0 +1,111 @@
+---
+title: "Heatmap"
+author: "Melissa Naugle"
+date: "4/26/2021"
+output: html_document
+---
+
+#1. Set WD and load packages
+
+```{r setup}
+setwd("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/Figures/")
+library(tidyverse) 
+library(reshape2)  
+library(ggplot2)   
+#library(ggdendro)
+library(gplots)
+library(RColorBrewer)
+library(heatmaply)
+library(ggheatmap)
+```
+
+#2. Read in data, check for duplicates, cluster, and reshape 
+
+```{r data}
+# load data
+
+#data <- read.table("../../data/EdgeR_P0.001/diffExpr.P0.001_C2.matrix.log2.centered.dat", header=TRUE, sep = "\t") #all samples
+
+data <- read.table("../../data/Controls_only/diffExpr.P0.05_C2.matrix.log2.centered.dat", header = T, sep = "\t") #just controls
+
+
+head(data)
+#how many contigs
+nrow(data) 
+
+#Check for row duplicates
+data[duplicated(data) | duplicated(data, fromLast=TRUE), ]
+
+#Re-organize data 
+#cluster rows
+row.order <- hclust(dist(data))$order 
+#cluster columns by sample order 
+names(data)
+
+#choose col ordering
+
+#col.order <-c(1,2,3,4, 23,24,25,26,9,10,11,12,31,32,33,34,16,17,18,5,6,7,8,27,28,29,30,13,14,15,35,36,37,38,19,20,21,22) #all samples
+
+col.order<-c(1,2,3,4,12,13,14,15,5,6,7,8,16,17,18,19,9,10,11) #controls only 
+
+#re-order matrix according to clustering
+dat_clust <- data[row.order, col.order] # re-order matrix according to clustering
+#reshape into data frame
+df_molten_dat <- melt(as.matrix(dat_clust)) 
+names(df_molten_dat)[c(1:2)] <- c("Trinity_ID", "treatment")
+df_molten_dat
+```
+
+#3. Make heatmap
+
+```{r heatmap}
+#Find min and max of value column in data frame to determine range of heatmap
+
+max <- max(df_molten_dat$value)
+min <- min(df_molten_dat$value)
+mean <- mean(df_molten_dat$value)
+IQR(df_molten_dat$value)
+
+#plot heatmap
+g <- ggplot(df_molten_dat, aes(x=treatment,y=Trinity_ID)) +
+  geom_tile(aes(fill = value)) +
+  scale_fill_gradient2(
+  #set colors
+  low="blue", mid="black", high="orange", 
+  #set midpoint, max, min, can change these to change the color scale
+  midpoint=0, limits=c(-5,5)) + 
+  ylab("Genes") +
+  xlab("") +
+  ggtitle("") +
+  theme(legend.title = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(size=10),
+        axis.title = element_text(size=14,face="bold"),
+        #change x text size
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        #make y text tiny. Can make bigger if you want to read contig names
+        axis.text.y = element_text(angle = 20, size = 0))+
+  labs(fill = "Log Fold Change")
+
+g
+
+#ggsave("../Figures/Classic_EdgeR/heatmap_p0.001_allheatvcontrol_04_26_21_smallerlimits.png",plot=g)
+```
+
+
+#diff heatmap style 
+
+```{r}
+jpeg("controls_only/heatmap_p0.05_dendro_07042021.jpg", width = 400, height = 400)
+
+dat_clust_scale <- scale(dat_clust)
+col<- colorRampPalette(c("purple", "black", "orange"))(2000)
+heatmap <- heatmap(dat_clust_scale, col = col, Rowv  = NA, ColSideColors = c(rep("firebrick4", 4), rep("tomato3", 4), rep("palegreen3", 4), rep("royalblue2", 4), rep("lightblue", 3)), cexRow = 0.0001) 
+
+#Save fig
+dev.off() 
+```
+
+
+
+

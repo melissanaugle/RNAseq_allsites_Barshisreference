@@ -1,0 +1,14 @@
+"","delta.rank","pval","level","nseqs","term","name","p.adj"
+"54",0,2.22843236731362e-06,3,18,"GO:0001539","cilium or flagellum-dependent cell motility",0
+"175",0,3.31790840776013e-10,2,46,"GO:0006099;GO:0006101;GO:0072350","citrate metabolic process",0
+"314",0,3.01158652928413e-06,2,11,"GO:0006760;GO:0046653","folic acid-containing compound metabolic process",0
+"334",0,3.6152105836823e-05,3,26,"GO:0006839","mitochondrial transport",0.00670731707317073
+"358",0,6.17797410414059e-08,4,71,"GO:0006913;GO:0051169","nuclear transport",0
+"384",0,2.3064873417002e-06,4,39,"GO:0007005","mitochondrion organization",0
+"524",0,5.04076868774681e-12,2,29,"GO:0008033","tRNA processing",0
+"622",0,1.89881579301026e-05,3,37,"GO:0009636","response to toxic substance",0.00571428571428571
+"648",0,4.80717584828276e-05,4,22,"GO:0010001","glial cell differentiation",0.00909090909090909
+"728",0,4.57021499408499e-08,3,44,"GO:0016052","carbohydrate catabolic process",0
+"763",0,1.74761355423242e-07,2,7,"GO:0018065","protein-cofactor linkage",0
+"1024",0,2.61057491396638e-06,2,27,"GO:0033044","regulation of chromosome organization",0
+"1040",0,1.31207334809872e-05,4,39,"GO:0034097","response to cytokine",0.0053030303030303

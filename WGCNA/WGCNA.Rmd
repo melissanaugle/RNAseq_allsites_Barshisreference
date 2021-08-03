@@ -94,7 +94,7 @@ if (!gsg$allOK)
 
 Create an object called "datTraits" that contains your trait data
 ```{r}
-datTraits = read.csv("Controls_tommodelv3_07_02_2021_posterICRS/phenotypedata_controls_tommodels_07_02_21_ICRS.csv")
+datTraits = read.csv("controls_defense/phenotypedata_controls_pollutiononly.csv")
 head(datTraits)
 nrow(datTraits)
 #Then form a data frame analogous to expression data that will hold the clinical traits.
@@ -201,21 +201,21 @@ mergedColors = merge$colors
 #Eigengenes of the new merged modules:
 mergedMEs = merge$newMEs
 #INCLUE THE NEXT LINE TO SAVE TO FILE
-dev.off()
+#dev.off()
 ```
 
 And finally, this plots the dendogram with the module colors below it.
 ```{r}
 #plot dendrogram with module colors below it
 #INCLUE THE NEXT LINE TO SAVE TO FILE
-pdf(file="cluster_controlssamples_icrs.pdf")
+#pdf(file="cluster_controlssamples_icrs.pdf")
 plotDendroAndColors(geneTree, cbind(dynamicColors, mergedColors), c("Dynamic Tree Cut", "Merged dynamic"), dendroLabels= FALSE, hang=0.03, addGuide= TRUE, guideHang=0.05)
 moduleColors = mergedColors
 colorOrder = c("grey", standardColors(50))
 moduleLabels = match(moduleColors, colorOrder)-1
 MEs = mergedMEs
 #INCLUE THE NEXT LINE TO SAVE TO FILE
-dev.off()
+#dev.off()
 ```
 
 #Step 3: Relate modules to external traits.
@@ -255,7 +255,7 @@ Finally, display the correlation values with a heatmap plot:
 #display the correlation values with a heatmap plot
 #sizeGrWindow(11,8)
 #INCLUE THE NEXT LINE TO SAVE TO FILE
-pdf(file="heatmap.pdf", height=11, width=8)
+#pdf(file="heatmap.pdf", height=11, width=8)
 labeledHeatmap(Matrix= moduleTraitCor, 
             xLabels= names(datTraits), 
             yLabels= names(MEs), 
@@ -268,7 +268,7 @@ labeledHeatmap(Matrix= moduleTraitCor,
             zlim= c(-1,1), 
             main= paste("Module-trait relationships"))
 #INCLUE THE NEXT LINE TO SAVE TO FILE
-dev.off()
+#dev.off()
 ```
 
 
@@ -283,7 +283,7 @@ Don't run this everytime!
 #could add other gene lists here
 
 ```{r}
-modulecolor = "antiquewhite1"
+modulecolor = "grey60"
 
 module_names <- names(datExpr)[moduleColors==modulecolor]
 module_names <- as.data.frame(module_names)
@@ -300,7 +300,7 @@ GOs_inmodule_dixon <- module_annot[module_annot$GO%in%typeAGO$term,]
 #check for dups 
 duplicated(GOs_inmodule_dixon$Ourcontigname)
 #GOs_inmodule_dixon$GeneMatch <- "Dixon et al 2020, general stress response"
-#write_csv(GOs_inmodule_dixon, "GOs_typeA_dixon_lightsteelblue1.csv") #change to module color
+write_csv(GOs_inmodule_dixon, "GOs_typeA_dixon_grey60.csv") #change to module color
 
 #check for matches with barshis 2013
 barshis_heat_v_control <- read.csv("../../../CSUMB/Thesis/Gene_lists_etc/DEGS_control_v_hot_barshi2013.csv")
@@ -337,7 +337,7 @@ par(mar = c(6, 8.5, 3, 3));
 
 ```{r}
 # Display the correlation values within a heatmap plot
-pdf(file="Trait_heatmap_controls_phenotype_07022021_icrs.pdf", height=9, width=8)
+pdf(file="Trait_heatmap_controls_phenotype_07022021_pollonly.pdf", height=9, width=8)
 labeledHeatmap(Matrix = moduleTraitCor,
 xLabels = names(datTraits),
 ySymbols = modLabels,
@@ -349,7 +349,7 @@ setStdMargins = TRUE,
 cex.text = 0.8,
 cex.lab.x = 0.8,
 zlim = c(-.8,.8),
-main = paste("Module-Trait Correlations of Control Treatments"))
+main = paste("Module-Trait Correlations of Control \n and Heat Stress Treatments"))
 dev.off()
 ```
 

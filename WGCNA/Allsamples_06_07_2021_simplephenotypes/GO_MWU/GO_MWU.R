@@ -18,7 +18,7 @@
 setwd("~/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/Allsamples_06_07_2021_simplephenotypes/GO_MWU/")
 
 # Edit these to match your data file names: 
-input="contigs_signif_file_GOMWU_darkgrey.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
+input="contigs_signif_file_GOMWU_thistle2.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
 goAnnotations="GO_annot_table" # two-column, tab-delimited, one line per gene, multiple GO terms separated by semicolon. If you have multiple lines per gene, use nrify_GOtable.pl prior to running this script.
 goDatabase="go.obo" # download from http://www.geneontology.org/GO.downloads.ontology.shtml
 goDivision="BP" # either MF, or BP, or CC
@@ -59,8 +59,7 @@ results=gomwuPlot(input,goAnnotations,goDivision,
 # if there are too many categories displayed, try make it more stringent with level1=0.05,level2=0.01,level3=0.001.  
 
 # text representation of results, with actual adjusted p-values
-results <- results[[1]]
-write.csv(results, "GO_MWU_darkmagenta_BP.csv")
+results[[1]]
 
 # ------- extracting representative GOs
 
@@ -90,4 +89,6 @@ for (ci in unique(ct)) {
 mwus=read.table(paste("MWU",goDivision,input,sep="_"),header=T)
 bestGOs=mwus[mwus$name %in% annots,]
 bestGOs
+write.csv(bestGOs, "bestGOs_GO_MWU_thistle2_BP.csv")
+
 

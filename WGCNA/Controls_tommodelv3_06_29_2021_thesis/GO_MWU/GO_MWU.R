@@ -15,10 +15,10 @@
 
 ################################################################
 # First, press command-D on mac or ctrl-shift-H in Rstudio and navigate to the directory containing scripts and input files. Then edit, mark and execute the following bits of code, one after another.
-setwd("~/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/Allsamples_06_07_2021_simplephenotypes/GO_MWU/")
+setwd("~/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/Controls_tommodelv3_06_29_2021_thesis/GO_MWU/")
 
 # Edit these to match your data file names: 
-input="contigs_signif_file_GOMWU_darkgrey.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
+input="contigs_signif_file_GOMWU_paleturquoise.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
 goAnnotations="GO_annot_table" # two-column, tab-delimited, one line per gene, multiple GO terms separated by semicolon. If you have multiple lines per gene, use nrify_GOtable.pl prior to running this script.
 goDatabase="go.obo" # download from http://www.geneontology.org/GO.downloads.ontology.shtml
 goDivision="BP" # either MF, or BP, or CC
@@ -90,5 +90,5 @@ for (ci in unique(ct)) {
 mwus=read.table(paste("MWU",goDivision,input,sep="_"),header=T)
 bestGOs=mwus[mwus$name %in% annots,]
 bestGOs
-write.csv(bestGOs, "bestGOs_GO_MWU_darkgrey_BP.csv")
+write.csv(bestGOs, "bestGOs_GO_MWU_paleturquoise_BP.csv")
 

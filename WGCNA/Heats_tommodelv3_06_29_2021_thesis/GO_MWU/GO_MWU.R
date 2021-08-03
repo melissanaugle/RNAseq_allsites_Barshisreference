@@ -18,10 +18,10 @@
 setwd("~/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/Heats_tommodelv3_06_29_2021_thesis/GO_MWU/")
 
 # Edit these to match your data file names: 
-input="contigs_signif_file_GOMWU_bisque4.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
+input="contigs_signif_file_GOMWU_antiquewhite4.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
 goAnnotations="GO_annot_table" # two-column, tab-delimited, one line per gene, multiple GO terms separated by semicolon. If you have multiple lines per gene, use nrify_GOtable.pl prior to running this script.
 goDatabase="go.obo" # download from http://www.geneontology.org/GO.downloads.ontology.shtml
-goDivision="BP" # either MF, or BP, or CC
+goDivision="MF" # either MF, or BP, or CC
 source("gomwu.functions.R")
 
 # ------------- Calculating stats
@@ -90,5 +90,5 @@ for (ci in unique(ct)) {
 mwus=read.table(paste("MWU",goDivision,input,sep="_"),header=T)
 bestGOs=mwus[mwus$name %in% annots,]
 bestGOs
-write.csv(bestGOs, "bestGOs_GO_MWU_bisque4_BP.csv")
+write.csv(bestGOs, "bestGOs_GO_MWU_antiquewhite4_MF.csv")
 

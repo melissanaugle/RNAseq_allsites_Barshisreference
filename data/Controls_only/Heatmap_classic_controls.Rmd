@@ -10,7 +10,7 @@ Controls only
 #1. Set WD and load packages
 
 ```{r setup}
-setwd("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/Controls_only/")
+setwd("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/data/Controls_only/")
 library(tidyverse) 
 library(reshape2)  
 library(ggplot2)   
@@ -78,5 +78,41 @@ g <- ggplot(df_molten_dat, aes(x=treatment,y=Trinity_ID)) +
 
 g
 
-ggsave("../Figures/Classic_EdgeR/heatmap_p0.001_allheatvcontrol_04_26_21_smallerlimits.png",plot=g)
+#ggsave("../Figures/Classic_EdgeR/heatmap_p0.001_allheatvcontrol_04_26_21_smallerlimits.png",plot=g)
 ```
+#Heatmap with dendrogram
+
+```{r}
+
+data_betterlabels <- data
+names(data_betterlabels)
+names(data_betterlabels) <- c("Coconut Point 1" , "Coconut Point 2"  ,"Coconut Point 3" , "Coconut Point 4",  "Faga'alu 1"  ,"Faga'alu 3",  "Faga'alu 4" ,"Faga'alu 6"  ,"Faga'tele  3" ,"Faga'tele  5" ,"Faga'tele  6" ,"Cannery 2",   "Cannery 3"   ,"Cannery 4"  ,
+"Cannery 6"   ,"Vatia 1"   ,"Vatia 3"  , "Vatia 4"  , "Vatia Control 6" )
+
+my_palette <- colorRampPalette(c("purple", "black", "yellow"))
+
+col_breaks = c(seq(-6,-2,length=100), # for purple
+seq(-1.99,1.99,length=100),  # for black
+seq(2,6,length=100)) #yellow
+
+
+jpeg(file = "../../Figures/Classic_EdgeR/controls_only/heatmap_p0.05_controlsonly_07_18_21.jpg")
+
+heatmap.2(as.matrix(data_betterlabels), dendrogram = c("column"), col=my_palette, trace="none", 
+          labRow=FALSE, ylab="", xlab=" ", breaks = col_breaks, density.info="none", key.xlab="Log Fold Change",
+          key.title =" ",margins =c(12,9))
+dev.off()
+
+
+```
+
+
+
+
+
+
+
+
+
+
+

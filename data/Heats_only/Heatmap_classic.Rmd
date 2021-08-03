@@ -5,10 +5,12 @@ date: "4/26/2021"
 output: html_document
 ---
 
+##Heats only
+
 #1. Set WD and load packages
 
 ```{r setup}
-setwd("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/")
+setwd("/Users/Melissa/Desktop/GitHub/RNAseq_allsites_Barshisreference/data/Heats_only/")
 library(tidyverse) 
 library(reshape2)  
 library(ggplot2)   
@@ -21,7 +23,7 @@ library(RColorBrewer)
 
 ```{r data}
 # load data
-data <- read.table("../data/EdgeR_P0.001/diffExpr.P0.001_C2.matrix.log2.centered.dat", header=TRUE, sep = "\t")
+data <- read.table("diffExpr.P0.05_C2.matrix.log2.centered.dat", header=TRUE, sep = "\t")
 head(data)
 #how many contigs
 nrow(data) 
@@ -45,12 +47,41 @@ col.order <-c(1,2,3,4, #coco E
               35,36,37,38, #vat H
               19,20,21,22) #tele H
 #re-order matrix according to clustering
-dat_clust <- data[row.order, col.order] # re-order matrix according to clustering
+#dat_clust <- data[row.order, col.order] # re-order matrix according to clustering
 #reshape into data frame
-df_molten_dat <- melt(as.matrix(dat_clust)) 
-names(df_molten_dat)[c(1:2)] <- c("Trinity_ID", "treatment")
-df_molten_dat
+#df_molten_dat <- melt(as.matrix(dat_clust)) 
+#names(df_molten_dat)[c(1:2)] <- c("Trinity_ID", "treatment")
+#df_molten_dat
 ```
+##Heatmap with dendrogram 
+
+
+```{r}
+
+data_betterlabels <- data
+names(data_betterlabels)
+names(data_betterlabels) <- c("Coconut Point 1" , "Coconut Point 2" , "Coconut Point 3"  ,"Coconut Point 4"  ,"Faga'alu 1",  "Faga'alu 4"  ,"Faga'alu 6", "Faga'tele 1" ,"Faga'tele 3", "Faga'tele 5", "Faga'tele 6", "Cannery 2" ,  "Cannery 3",   "Cannery 5"  , "Cannery 6" ,  "Vatia 1",   "Vatia 3" ,  "Vatia 4"  , "Vatia 6")
+
+my_palette <- colorRampPalette(c("purple", "black", "yellow"))
+
+col_breaks = c(seq(-6,-2,length=100), # for purple
+seq(-1.99,1.99,length=100),  # for black
+seq(2,6,length=100)) #yellow
+
+
+jpeg(file = "../../Figures/Classic_EdgeR/heats_only/heatmap_p0.05_heatsonly_07_18_21.jpg")
+
+heatmap.2(as.matrix(data_betterlabels), dendrogram = c("column"), col=my_palette, trace="none", 
+          labRow=FALSE, ylab="", xlab=" ", breaks = col_breaks, density.info="none", key.xlab="Log Fold Change",
+          key.title =" ",margins =c(12,9))
+dev.off()
+```
+
+
+
+
+
+#below is old heatmap - 
 
 #3. Make heatmap
 
@@ -85,5 +116,4 @@ g <- ggplot(df_molten_dat, aes(x=treatment,y=Trinity_ID)) +
 
 g
 
-ggsave("../Figures/Classic_EdgeR/heatmap_p0.001_allheatvcontrol_04_26_21_smallerlimits.png",plot=g)
 ```

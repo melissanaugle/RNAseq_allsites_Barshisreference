@@ -1,0 +1,4 @@
+"","delta.rank","pval","level","nseqs","term","name","p.adj"
+"77",0,6.20204248346064e-05,2,125,"GO:0004930","G protein-coupled receptor activity",0.00833333333333333
+"87",0,2.20776956677857e-05,2,5,"GO:0005159","insulin-like growth factor receptor binding",0
+"264",0,2.34929511906967e-10,5,190,"GO:0043565","sequence-specific DNA binding",0

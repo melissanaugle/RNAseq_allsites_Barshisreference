@@ -94,10 +94,10 @@ write.table(GOtable, file = "GO_annot_table", sep = "\t", row.names = F, quote =
 DGE <- read.csv("../AnnotatedNetworkAnalysisResults1kcontrols_06072021_blue.csv", header = T)
 head(DGE)
 
-module_ofinterest <- DGE[DGE$moduleColors == "darkgrey",]
-head(module_ofinterest)
+module_ofinterest <- DGE[DGE$moduleColors == "royalblue",]
+names(module_ofinterest)
 #change second number based on module 
-module_ofinterest <- module_ofinterest[,c(2,41)]
+module_ofinterest <- module_ofinterest[,c(2,60)]
 row.names(module_ofinterest) <- NULL
 head(module_ofinterest)
 
@@ -107,23 +107,21 @@ allcontigs <- as.data.frame(DGE[,1]) #15109 contigs in all modules
 names(allcontigs) <- "Ourcontigname"
 #could also try this with all possible contigs?
 
-head(module_ofinterest)
-head(allcontigs)
 
 contigs_and_signif <- merge(module_ofinterest, allcontigs, all = T)
 head(contigs_and_signif)
 
 #change column header
-contigs_and_signif[!is.na(contigs_and_signif$MM.darkgrey),]
+contigs_and_signif[!is.na(contigs_and_signif$MM.royalblue),]
 #check # or rows to make sure matches expected
 
-contigs_and_signif[is.na(contigs_and_signif$MM.darkgrey),2] <- 0
+contigs_and_signif[is.na(contigs_and_signif$MM.royalblue),2] <- 0
 head(contigs_and_signif)
-contigs_and_signif[contigs_and_signif$MM.darkgrey > 0,]
+contigs_and_signif[contigs_and_signif$MM.royalblue > 0,]
 #check # or rows to make sure matches expected
 
 #write in module name 
-write.csv(contigs_and_signif, "contigs_signif_file_GOMWU_darkgrey.csv", row.names = F, quote = F)
+write.csv(contigs_and_signif, "contigs_signif_file_GOMWU_royalblue.csv", row.names = F, quote = F)
 ```
 
 

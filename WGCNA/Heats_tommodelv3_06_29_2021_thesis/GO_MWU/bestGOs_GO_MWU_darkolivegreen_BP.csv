@@ -1,0 +1,7 @@
+"","delta.rank","pval","level","nseqs","term","name","p.adj"
+"90",0,5.74398529532238e-06,2,121,"GO:0006281","DNA repair",0
+"129",0,1.36638756858564e-07,2,138,"GO:0006520","cellular amino acid metabolic process",0
+"266",0,2.57389675195491e-08,2,171,"GO:0008380","RNA splicing",0
+"329",0,4.58770410570017e-06,2,61,"GO:0010564","regulation of cell cycle process",0
+"397",0,1.06659596137445e-05,2,19,"GO:0022613;GO:0044085;GO:0042254","cellular component biogenesis",0.00416666666666667
+"398",0,3.12181794725077e-05,3,53,"GO:0022618;GO:0071826","ribonucleoprotein complex assembly",0.00476190476190476

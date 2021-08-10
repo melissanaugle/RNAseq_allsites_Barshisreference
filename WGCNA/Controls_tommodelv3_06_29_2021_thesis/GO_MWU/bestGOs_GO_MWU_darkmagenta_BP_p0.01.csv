@@ -1,0 +1,4 @@
+"","delta.rank","pval","level","nseqs","term","name","p.adj"
+"125",0,0.000211816496794629,5,85,"GO:0007219","Notch signaling pathway",0.0321428571428571
+"338",0,1.07503556011527e-06,2,19,"GO:0043901","negative regulation of multi-organism process",0
+"508",0,8.41616357123857e-05,4,13,"GO:0071345","cellular response to cytokine stimulus",0.015

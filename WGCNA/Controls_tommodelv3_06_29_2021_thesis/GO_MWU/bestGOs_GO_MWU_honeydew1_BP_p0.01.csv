@@ -1,0 +1,8 @@
+"","delta.rank","pval","level","nseqs","term","name","p.adj"
+"15",0,1.09162719779158e-05,8,18,"GO:0000381","regulation of alternative mRNA splicing, via spliceosome",0
+"172",0,0.000372834163199128,2,24,"GO:0007033","vacuole organization",0.0453125
+"258",0,0.00049428251068362,5,24,"GO:0009069","serine family amino acid metabolic process",0.0557142857142857
+"427",0,2.07192433023128e-06,7,6,"GO:0032435;GO:1901799;GO:2000059;GO:1903051;GO:1903363;GO:0007130;GO:0070193","negative regulation of cellular protein catabolic process",0
+"535",0,0.000556676337839025,3,43,"GO:0043648","dicarboxylic acid metabolic process",0.0621621621621622
+"570",0,7.75678889397764e-06,2,36,"GO:0045665","negative regulation of neuron differentiation",0
+"733",0,0.000946196739528461,2,5,"GO:0070918;GO:0031050","production of small RNA involved in gene silencing by RNA",0.0822916666666667

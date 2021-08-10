@@ -94,7 +94,7 @@ if (!gsg$allOK)
 
 Create an object called "datTraits" that contains your trait data
 ```{r}
-datTraits = read.csv("controls_defense/phenotypedata_controls_pollutiononly.csv")
+datTraits = read.csv("Controls_tommodelv3_06_29_2021_vatialow_manuscript/phenotypedata_controls_tommodels_06_29_21_manuscript.csv")
 head(datTraits)
 nrow(datTraits)
 #Then form a data frame analogous to expression data that will hold the clinical traits.
@@ -181,6 +181,8 @@ MEDiss= 1-cor(MEs)
 #Cluster module eigengenes
 METree= flashClust(as.dist(MEDiss), method= "average")
 #save(dynamicMods, MEList, MEs, MEDiss, METree, file= "Network_heatSamples_signed_RLDfiltered.RData")
+
+#write.csv(MEs,"Controls_tommodelv3_06_29_2021_vatialow_manuscript/eignegenes_controls.csv")
 ```
 
 Then, this plots the tree showing how the eigengenes cluster together

@@ -18,7 +18,7 @@
 setwd("~/Desktop/GitHub/RNAseq_allsites_Barshisreference/WGCNA/Controls_tommodelv3_06_29_2021_thesis/GO_MWU/")
 
 # Edit these to match your data file names: 
-input="contigs_signif_file_GOMWU_paleturquoise.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
+input="contigs_signif_file_GOMWU_honeydew1.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
 goAnnotations="GO_annot_table" # two-column, tab-delimited, one line per gene, multiple GO terms separated by semicolon. If you have multiple lines per gene, use nrify_GOtable.pl prior to running this script.
 goDatabase="go.obo" # download from http://www.geneontology.org/GO.downloads.ontology.shtml
 goDivision="BP" # either MF, or BP, or CC
@@ -66,7 +66,7 @@ results[[1]]
 
 # this module chooses GO terms that best represent *independent* groups of significant GO terms
 
-pcut=1e-2 # adjusted pvalue cutoff for representative GO
+pcut=1e-1 # adjusted pvalue cutoff for representative GO
 hcut=0.95 # heght at which cut the GO ters tree to get "independent groups". Unremark the following two lines to plot this
 plot(results[[2]])
 #abline(h=hcut,col="red")
@@ -88,7 +88,8 @@ for (ci in unique(ct)) {
 }
 
 mwus=read.table(paste("MWU",goDivision,input,sep="_"),header=T)
+head(mwus)
 bestGOs=mwus[mwus$name %in% annots,]
 bestGOs
-write.csv(bestGOs, "bestGOs_GO_MWU_paleturquoise_BP.csv")
+write.csv(bestGOs, "bestGOs_GO_MWU_honeydew1_BP_p0.01.csv")
 
